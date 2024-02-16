@@ -1,3 +1,16 @@
+<!DOCTYPE html>
+<html>
+<head>
+<style>
+    body {
+        background-image: url('media/parchment.jpg');
+        background-repeat: no-repeat;
+        background-attachment: fixed;
+        background-size: cover;
+        font-family: 'Brush Script MT', cursive;
+    }
+</style>
+
 <script>
     var seconds = 999
     function updateTimer() {
@@ -6,8 +19,10 @@
     }
     setInterval(updateTimer, 1000);
 </script>
+</head>
 
 <body>
-    <p id="text" style="font-family:'Brush Script MT', cursive">Blah blah blah blah blah</p>
-    <p id="timer" style="font-family:'Brush Script MT', cursive"></p>
+    <p id="text">Blah blah blah blah blah</p>
+    <p id="timer"></p>
 </body>
+</html>
