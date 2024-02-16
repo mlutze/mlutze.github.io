@@ -1,0 +1,13 @@
+<script>
+    var seconds = 999
+    function updateTimer() {
+        seconds--
+        document.getElementById("timer").textContent = seconds
+    }
+    setInterval(updateTimer, 1000);
+</script>
+
+<body>
+    <p id="text" style="font-family:'Brush Script MT', cursive">Blah blah blah blah blah</p>
+    <p id="timer" style="font-family:'Brush Script MT', cursive"></p>
+</body>
