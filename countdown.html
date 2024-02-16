@@ -12,17 +12,29 @@
 </style>
 
 <script>
-    var seconds = 999
-    function updateTimer() {
-        seconds--
+    onload = function() {
+        const params = new URLSearchParams(location.search)
+        const encodedData = params.get("x")
+        const jsonData = atob(params.get("x"))
+        console.log("json data: " + jsonData)
+        const data = JSON.parse(atob((params.get("x"))))
+        let seconds = data.seconds
+        let text = data.text
+
         document.getElementById("timer").textContent = seconds
+        document.getElementById("text").textContent = text
+
+        function updateTimer() {
+            seconds--
+            document.getElementById("timer").textContent = seconds
+        }
+        setInterval(updateTimer, 1000);
     }
-    setInterval(updateTimer, 1000);
 </script>
 </head>
 
 <body>
-    <p id="text">Blah blah blah blah blah</p>
+    <p id="text"></p>
     <p id="timer"></p>
 </body>
 </html>
