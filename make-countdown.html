@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+<head>
+<script>
+    oninput = function() {
+        let time = document.getElementById("time").value;
+        let text = document.getElementById("text").value;
+        let data = { "seconds": time, "text": text };
+        let json = JSON.stringify(data);
+        let base64 = btoa(json);
+        let relUrl = "./countdown.html?x=" + base64;
+        let url = new URL(relUrl, location.href).href;
+        let anchor = document.getElementById("link");
+        anchor.href = url;
+        anchor.textContent = url;
+    }
+</script>
+</head>
+<body>
+    <table>
+        <tr>
+            <td>Time: (seconds)</td>
+            <td><input id="time" type="number"/></td>
+        </tr>
+        <tr>
+            <td>Text:</td>
+            <td><textarea id="text"></textarea></td>
+        </tr>
+        <tr>
+            <td>Link:</td>
+            <td><a id="link"></a></td>
+        </tr>
+    </table>
+</body>
+</html>

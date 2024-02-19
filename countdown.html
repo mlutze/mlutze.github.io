@@ -22,12 +22,12 @@
         let seconds = data.seconds
         let text = data.text
 
-        document.getElementById("timer").textContent = seconds
+        document.getElementById("timer").textContent = "You have " + seconds + " seconds."
         document.getElementById("text").textContent = text
 
         function updateTimer() {
             seconds--
-            document.getElementById("timer").textContent = seconds
+            document.getElementById("timer").textContent = "You have " + seconds + " seconds."
         }
         setInterval(updateTimer, 1000);
     }
