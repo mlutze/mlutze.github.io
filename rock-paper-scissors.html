@@ -2,7 +2,8 @@
 <html>
 <head>
 <script>
-    let choices = [null, null];
+    // 0th index is placeholder
+    let choices = [null, null, null]
     let canvas_size = 100;
     let height = 60;
     let center = canvas_size / 2;
@@ -45,9 +46,30 @@
         for (let button of playerButtons) {
             button.disabled = true;
         }
+
+        // record the chosen shape
+        choices[player] = shape;
         
         // check if other player has also selected
+        if (choices[3 - player] !== null) {
+            onBothPicked();
+        }
+    }
 
+    function onBothPicked() {
+        if (beats(choices[1], choices[2])) {
+            // player 1 wins
+        } else if (beats(choice[2], choice[1])) {
+            // player 2 wins
+        } else {
+            // it is a draw
+        }
+    }
+
+    function beats(s1, s2) {
+        return (s1 === "circle" && s2 === "triangle")
+            || (s1 === "triangle" && s2 === "square")
+            || (s1 === "square" && s2 === "circle");
     }
 
     onload = function() {
