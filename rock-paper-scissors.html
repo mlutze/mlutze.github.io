@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html>
+<head>
+<script>
+    let choices = [null, null];
+    let canvas_size = 100;
+    let height = 60;
+    let center = canvas_size / 2;
+    function drawCircle(canvas) {
+        let radius = height / 2;
+        let context = canvas.getContext("2d");
+        context.beginPath();
+        context.arc(center, center, radius, 0, 2 * Math.PI);
+        context.fill();
+    }
+
+    function drawSquare(canvas) {
+        let side = height;
+        let topleft = center - side / 2;
+        let context = canvas.getContext("2d");
+        context.beginPath();
+        context.rect(topleft, topleft, side, side);
+        context.fill();
+    }
+
+    function drawTriangle(canvas) {
+        let side = height * 2 / Math.sqrt(3);
+        let bottom = center + height / 2;
+        let top = center - height / 2;
+        let left = center - side / 2;
+        let right = center + side / 2;
+        let context = canvas.getContext("2d");
+        context.moveTo(center, top);
+        context.beginPath();
+        context.lineTo(left, bottom);
+        context.lineTo(right, bottom);
+        context.lineTo(center, top);
+        context.fill();
+    }
+
+    function onPick(player, shape) {
+        console.log("clicked");
+        // disable all buttons for that player
+        let playerButtons = document.getElementsByClassName("button_player" + player);
+        for (let button of playerButtons) {
+            button.disabled = true;
+        }
+        
+        // check if other player has also selected
+
+    }
+
+    onload = function() {
+        let circles = document.getElementsByClassName("circle");
+        let squares = document.getElementsByClassName("square");
+        let triangles = document.getElementsByClassName("triangle");
+        for (let circle of circles) {
+            drawCircle(circle);
+        }
+
+        for (let square of squares) {
+            drawSquare(square);
+        }
+
+        for (let triangle of triangles) {
+            drawTriangle(triangle);
+        }
+
+    }
+</script>
+
+</head>
+<body>
+<table>
+<tr>
+    <td>
+    <h1>Player 1</h1>
+    </td>
+    <td>
+    <h1>Player 2</h1>
+    </td>
+</tr>
+<tr>
+    <td>
+    <button class="button_player1" onclick="onPick(1, 'circle')">
+        <canvas class="circle" width="100" height="100"/>
+    </button>
+    <button class="button_player1" onclick="onPick(1, 'square')">
+        <canvas class="square" width="100" height="100"/>
+    </button>
+    <button class="button_player1" onclick="onPick(1, 'triangle')">
+        <canvas class="triangle" width="100" height="100"/>
+    </button>
+    </td>
+    <td>
+    <button class="button_player2" onclick="onPick(2, 'circle')">
+        <canvas class="circle" width="100" height="100"/>
+    </button>
+    <button class="button_player2" onclick="onPick(2, 'square')">
+        <canvas class="square" width="100" height="100"/>
+    </button>
+    <button class="button_player2" onclick="onPick(2, 'triangle')">
+        <canvas class="triangle" width="100" height="100"/>
+    </button>
+    </td>
+</tr>
+</table>
+<!--
+components:
+- log
+- 3 buttons each side
+- player 1 dropdown (AI/player)
+- player 2 dropdown (AI/player)
+- seed
+- immediate result box
+
+ -->
+</body>
+</html>
