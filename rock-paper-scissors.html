@@ -47,6 +47,10 @@
             button.disabled = true;
         }
 
+        // highlight the selected button
+        let button = document.getElementById("button_player" + player + "_" + shape);
+        button.style.backgroundColor = "gold";
+
         // record the chosen shape
         choices[player] = shape;
         
@@ -100,40 +104,41 @@
 <body>
 <table>
 <tr>
-    <td colspan="3">
+    <td colspan="3" style="text-align: center;">
     <h1>Player 1</h1>
     </td>
-    <td colspan="3">
+    <td colspan="3" style="text-align: center;">
     <h1>Player 2</h1>
     </td>
 </tr>
 <tr>
     <td>
-    <button class="button_player1" onclick="onPick(1, 'circle')">
+    <button id="button_player1_circle" class="button_player1" onclick="onPick(1, 'circle')">
         <canvas class="circle" width="100" height="100"/>
     </button>
+    </td>
     <td>
-    <button class="button_player1" onclick="onPick(1, 'square')">
+    <button id="button_player1_square" class="button_player1" onclick="onPick(1, 'square')">
         <canvas class="square" width="100" height="100"/>
     </button>
     </td>
     <td>
-    <button class="button_player1" onclick="onPick(1, 'triangle')">
+    <button id="button_player1_triangle" class="button_player1" onclick="onPick(1, 'triangle')">
         <canvas class="triangle" width="100" height="100"/>
     </button>
     </td>
     <td>
-    <button class="button_player2" onclick="onPick(2, 'circle')">
+    <button id="button_player2_circle" class="button_player2" onclick="onPick(2, 'circle')">
         <canvas class="circle" width="100" height="100"/>
     </button>
     </td>
     <td>
-    <button class="button_player2" onclick="onPick(2, 'square')">
+    <button id="button_player2_square" class="button_player2" onclick="onPick(2, 'square')">
         <canvas class="square" width="100" height="100"/>
     </button>
     </td>
     <td>
-    <button class="button_player2" onclick="onPick(2, 'triangle')">
+    <button id="button_player2_triangle" class="button_player2" onclick="onPick(2, 'triangle')">
         <canvas class="triangle" width="100" height="100"/>
     </button>
     </td>
