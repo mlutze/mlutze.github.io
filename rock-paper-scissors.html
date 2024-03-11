@@ -100,10 +100,10 @@
 <body>
 <table>
 <tr>
-    <td>
+    <td colspan="3">
     <h1>Player 1</h1>
     </td>
-    <td>
+    <td colspan="3">
     <h1>Player 2</h1>
     </td>
 </tr>
@@ -112,9 +112,12 @@
     <button class="button_player1" onclick="onPick(1, 'circle')">
         <canvas class="circle" width="100" height="100"/>
     </button>
+    <td>
     <button class="button_player1" onclick="onPick(1, 'square')">
         <canvas class="square" width="100" height="100"/>
     </button>
+    </td>
+    <td>
     <button class="button_player1" onclick="onPick(1, 'triangle')">
         <canvas class="triangle" width="100" height="100"/>
     </button>
@@ -123,9 +126,13 @@
     <button class="button_player2" onclick="onPick(2, 'circle')">
         <canvas class="circle" width="100" height="100"/>
     </button>
+    </td>
+    <td>
     <button class="button_player2" onclick="onPick(2, 'square')">
         <canvas class="square" width="100" height="100"/>
     </button>
+    </td>
+    <td>
     <button class="button_player2" onclick="onPick(2, 'triangle')">
         <canvas class="triangle" width="100" height="100"/>
     </button>
