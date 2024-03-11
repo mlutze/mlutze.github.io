@@ -58,12 +58,17 @@
 
     function onBothPicked() {
         if (beats(choices[1], choices[2])) {
-            // player 1 wins
+            reportResult(1);
         } else if (beats(choice[2], choice[1])) {
-            // player 2 wins
+            reportResult(2);
         } else {
-            // it is a draw
+            reportResult(0);
         }
+    }
+
+    function reportResult(winner) {
+        // display who won
+        // add to log
     }
 
     function beats(s1, s2) {
