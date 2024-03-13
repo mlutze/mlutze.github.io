@@ -13,6 +13,19 @@
     let canvas_size = 100;
     let height = 60;
     let center = canvas_size / 2;
+
+    let smallCanvasSize = 25;
+    let smallHeight = 20;
+    let smallCenter = smallCanvasSize / 2;
+
+    function drawSmallCircle(canvas) {
+        let radius = smallHeight / 2;
+        let context = canvas.getContext("2d");
+        context.beginPath();
+        context.arc(smallCenter, smallCenter, radius, 0, 2 * Math.PI);
+        context.fill();
+    }
+
     function drawCircle(canvas) {
         let radius = height / 2;
         let context = canvas.getContext("2d");
@@ -83,7 +96,26 @@
         } else {
             winnerBox.innerText = "Player " + winner + " Wins"
         }
-        // add to log
+
+        // append to log
+        let canvas1 = document.createElement("canvas");
+        let canvas2 = document.createElement("canvas");
+        for (let canvas of [canvas1, canvas2]) {
+            canvas.height = smallCanvasSize;
+            canvas.width = smallCanvasSize;
+            drawSmallCircle(canvas);
+        }
+        let td1 = document.createElement("td");
+        td1.appendChild(canvas1);
+        let td2 = document.createElement("td");
+        td2.appendChild(canvas2);
+        let td3 = document.createElement("td");
+        let tr = document.createElement("tr");
+        for (let td of [td1, td2, td3]) {
+            tr.appendChild(td);
+        }
+        let log = document.getElementById("logbody");
+        log.appendChild(tr)
     }
 
     function beats(s1, s2) {
@@ -175,7 +207,7 @@
                     </td>
                 </tr>
             </thead>
-            <tbody>
+            <tbody id="logbody">
             </tbody>
         </table>
     </td>
