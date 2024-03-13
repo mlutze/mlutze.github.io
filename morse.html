@@ -1,5 +1,43 @@
 <!DOCTYPE html>
 <html>
+<head>
+    <script>
+
+    function randomChoice(arr) {
+        return Math.floor(Math.random() * arr.length);
+    }
+
+    function randomInt(min, max) {
+        return Math.floor(Math.random() * (max - min)) + min;
+    }
+
+    function randomWord(alphabet, wordMin, wordMax) {
+        let word = "";
+        let length = randomInt(min, max);
+        for (let i = 0; i < length; i++) {
+            word += randomChoice(alphabet);
+        }
+        return word;
+    }
+    
+    function makeRandomText(alphabet, wordMin, wordMax, length) {
+        let text = "";
+        while (text.length() < length) {
+            text += randomWord(alphabet, wordMin, wordMax) + " ";
+        }
+        return text.sub(0, length);
+    }
+
+    function generate() {
+        let alphabet = document.getElementById("alphabet");
+        
+    }
+    onload = function() {
+        let alphabetField = document.getElementById("alphabet");
+
+    }
+    </script>
+</head>
 <body>
 <input id="alphabet">
 <textarea id="submission">
@@ -14,6 +52,12 @@ Generate
 </button>
 <button>
     Record Result
+</button>
+<button>
+    Play
+</button>
+<button>
+    Stop
 </button>
 </body>
 </html>
