@@ -6,27 +6,36 @@
             margin-left: auto;
             margin-right: auto;
         }
+        .centerblock {
+            margin-left: auto;
+            margin-right: auto;
+            display: block;
+        }
     </style>
 <script>
     // 0th index is placeholder
     let choices = [null, null, null]
     let canvas_size = 100;
-    let height = 60;
-    let center = canvas_size / 2;
+    let largeHeight = 60;
 
     let smallCanvasSize = 25;
     let smallHeight = 20;
-    let smallCenter = smallCanvasSize / 2;
 
-    function drawSmallCircle(canvas) {
-        let radius = smallHeight / 2;
-        let context = canvas.getContext("2d");
-        context.beginPath();
-        context.arc(smallCenter, smallCenter, radius, 0, 2 * Math.PI);
-        context.fill();
+    function drawShape(canvas, name, height) {
+        console.log("drawing " + name);
+        if (name === "circle") {
+            drawCircle(canvas, height);
+        } else if (name === "square") {
+            drawSquare(canvas, height);
+        } else if (name === "triangle") {
+            drawTriangle(canvas, height);
+        } else {
+            throw Error("unrecognized shape: " + name);
+        }
     }
 
-    function drawCircle(canvas) {
+    function drawCircle(canvas, height) {
+        let center = canvas.height / 2;
         let radius = height / 2;
         let context = canvas.getContext("2d");
         context.beginPath();
@@ -34,7 +43,8 @@
         context.fill();
     }
 
-    function drawSquare(canvas) {
+    function drawSquare(canvas, height) {
+        let center = canvas.height / 2;
         let side = height;
         let topleft = center - side / 2;
         let context = canvas.getContext("2d");
@@ -43,7 +53,8 @@
         context.fill();
     }
 
-    function drawTriangle(canvas) {
+    function drawTriangle(canvas, height) {
+        let center = canvas.height / 2;
         let side = height * 2 / Math.sqrt(3);
         let bottom = center + height / 2;
         let top = center - height / 2;
@@ -99,12 +110,17 @@
 
         // append to log
         let canvas1 = document.createElement("canvas");
+        canvas1.classList.add("centerblock");
+        canvas1.height = smallCanvasSize;
+        canvas1.width = smallCanvasSize;
+        drawShape(canvas1, choices[1], smallHeight);
+
         let canvas2 = document.createElement("canvas");
-        for (let canvas of [canvas1, canvas2]) {
-            canvas.height = smallCanvasSize;
-            canvas.width = smallCanvasSize;
-            drawSmallCircle(canvas);
-        }
+        canvas2.classList.add("centerblock");
+        canvas2.height = smallCanvasSize;
+        canvas2.width = smallCanvasSize;
+        drawShape(canvas2, choices[2], smallHeight);
+
         let td1 = document.createElement("td");
         td1.appendChild(canvas1);
         let td2 = document.createElement("td");
@@ -129,15 +145,15 @@
         let squares = document.getElementsByClassName("square");
         let triangles = document.getElementsByClassName("triangle");
         for (let circle of circles) {
-            drawCircle(circle);
+            drawCircle(circle, largeHeight);
         }
 
         for (let square of squares) {
-            drawSquare(square);
+            drawSquare(square, largeHeight);
         }
 
         for (let triangle of triangles) {
-            drawTriangle(triangle);
+            drawTriangle(triangle, largeHeight);
         }
 
     }
