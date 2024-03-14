@@ -4,7 +4,7 @@
     <script>
 
     function randomChoice(arr) {
-        return Math.floor(Math.random() * arr.length);
+        return arr[randomInt(0, arr.length)];
     }
 
     function randomInt(min, max) {
@@ -13,38 +13,49 @@
 
     function randomWord(alphabet, wordMin, wordMax) {
         let word = "";
-        let length = randomInt(min, max);
+        let length = randomInt(wordMin, wordMax);
         for (let i = 0; i < length; i++) {
             word += randomChoice(alphabet);
         }
+        console.log(wordMin);
+        console.log(wordMax);
+        console.log(length);
+        console.log(word);
         return word;
     }
     
     function makeRandomText(alphabet, wordMin, wordMax, length) {
         let text = "";
-        while (text.length() < length) {
+        while (text.length < length) {
             text += randomWord(alphabet, wordMin, wordMax) + " ";
         }
-        return text.sub(0, length);
+        return text.slice(0, length);
     }
 
     function generate() {
-        let alphabet = document.getElementById("alphabet");
-        
+        let alphabet = document.getElementById("alphabet").value;
+        let wordMin = parseInt(document.getElementById("wordMin").value);
+        let wordMax = parseInt(document.getElementById("wordMax").value);
+        let length = parseInt(document.getElementById("length").value);
+
+        text = makeRandomText(alphabet, wordMin, wordMax, length);
+        let solution = document.getElementById("solution");
+        solution.value = text;
     }
+
     onload = function() {
-        let alphabetField = document.getElementById("alphabet");
+        
 
     }
     </script>
 </head>
 <body>
-<input id="alphabet">
+<input id="alphabet"/>
 <textarea id="submission">
 </textarea>
 <textarea id="solution" disabled="true">
 </textarea>
-<button>
+<button id="generate" onclick="generate();">
 Generate
 </button>
 <button>
@@ -59,5 +70,8 @@ Generate
 <button>
     Stop
 </button>
+<input id="wordMin" type="number" value="1"/>
+<input id="wordMax" type="number" value="7"/>
+<input id="length" type="number" value="100"/>
 </body>
 </html>
