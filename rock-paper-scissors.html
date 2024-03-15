@@ -2,6 +2,9 @@
 <html>
 <head>
     <style>
+        .centertext {
+            text-align: center;
+        }
         .center {
             margin-left: auto;
             margin-right: auto;
@@ -121,17 +124,41 @@
         canvas2.width = smallCanvasSize;
         drawShape(canvas2, choices[2], smallHeight);
 
+        let winnerText = null;
+        if (winner === 0) {
+            winnerText = "-";
+        } else {
+            winnerText = winner;
+        }
+
         let td1 = document.createElement("td");
         td1.appendChild(canvas1);
         let td2 = document.createElement("td");
         td2.appendChild(canvas2);
         let td3 = document.createElement("td");
+        td3.innerText = winnerText;
+        td3.classList.add("centertext");
         let tr = document.createElement("tr");
         for (let td of [td1, td2, td3]) {
             tr.appendChild(td);
         }
         let log = document.getElementById("logbody");
         log.appendChild(tr)
+        setTimeout(newRound, 1000);
+    }
+
+    function newRound() {
+        choices = [null, null, null];
+        let buttons1 = document.getElementsByClassName("button_player1");
+        let buttons2 = document.getElementsByClassName("button_player2");
+        for (let button of buttons1) {
+            button.disabled = false;
+            button.style.backgroundColor = "";
+        }
+        for (let button of buttons2) {
+            button.disabled = false;
+            button.style.backgroundColor = "";
+        }
     }
 
     function beats(s1, s2) {
