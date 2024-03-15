@@ -2,6 +2,12 @@
 <html>
 <head>
     <script>
+    
+    var secretText = "";
+
+    function play() {
+
+    }
 
     function randomChoice(arr) {
         return arr[randomInt(0, arr.length)];
@@ -39,8 +45,12 @@
         let length = parseInt(document.getElementById("length").value);
 
         text = makeRandomText(alphabet, wordMin, wordMax, length);
+        secretText = text;
+    }
+
+    function showSolution() {
         let solution = document.getElementById("solution");
-        solution.value = text;
+        solution.value = secretText;
     }
 
     onload = function() {
@@ -58,7 +68,7 @@
 <button id="generate" onclick="generate();">
 Generate
 </button>
-<button>
+<button id="showSolution" onclick="showSolution();">
     Show Solution
 </button>
 <button>
