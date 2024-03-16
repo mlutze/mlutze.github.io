@@ -1,12 +1,17 @@
 <!DOCTYPE html>
 <html>
 <head>
+    <script src="https://cwjs.mastercw.com/cw.min.js"></script>
     <script>
     
     var secretText = "";
 
-    function play() {
+    function diff() {
+        
+    }
 
+    function play() {
+        cw.play(secretText);
     }
 
     function randomChoice(arr) {
@@ -44,8 +49,11 @@
         let wordMax = parseInt(document.getElementById("wordMax").value);
         let length = parseInt(document.getElementById("length").value);
 
-        text = makeRandomText(alphabet, wordMin, wordMax, length);
+        let solution = document.getElementById("solution");
+
+        let text = makeRandomText(alphabet, wordMin, wordMax, length);
         secretText = text;
+        solution.value = "*".repeat(length);
     }
 
     function showSolution() {
@@ -74,11 +82,8 @@ Generate
 <button>
     Record Result
 </button>
-<button>
+<button id="play" onclick="play();">
     Play
-</button>
-<button>
-    Stop
 </button>
 <input id="wordMin" type="number" value="1"/>
 <input id="wordMax" type="number" value="7"/>
