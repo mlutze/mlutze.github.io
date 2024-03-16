@@ -14,6 +14,9 @@
             margin-right: auto;
             display: block;
         }
+        .winnerannounce {
+            font-size: large;
+        }
     </style>
 <script>
     // 0th index is placeholder
@@ -131,18 +134,26 @@
             winnerText = winner;
         }
 
+        let log = document.getElementById("logbody");
+
+        let td0 = document.createElement("td");
+        let roundNumber = log.childElementCount + 1;
+        td0.innerText = roundNumber;
+        td0.classList.add("centertext");
+        
         let td1 = document.createElement("td");
         td1.appendChild(canvas1);
         let td2 = document.createElement("td");
         td2.appendChild(canvas2);
+
         let td3 = document.createElement("td");
         td3.innerText = winnerText;
         td3.classList.add("centertext");
+
         let tr = document.createElement("tr");
-        for (let td of [td1, td2, td3]) {
+        for (let td of [td0, td1, td2, td3]) {
             tr.appendChild(td);
         }
-        let log = document.getElementById("logbody");
         log.appendChild(tr)
         setTimeout(newRound, 1000);
     }
@@ -236,18 +247,22 @@
     <td colspan="6">
         <table class="center">
             <thead>
-                <tr colspan="3">
-                    <h3 style="text-align: center;">History</h3></tr>
                 <tr>
-                    <td>
-                        <h4>Player 1</h4>
-                    </td>
-                    <td>
-                        <h4>Player 2</h4>
-                    </td>
-                    <td>
-                        <h4>Winner</h4>
-                    </td>
+                    <th colspan="4">History</th>
+                </tr>
+                <tr>
+                    <th>
+                        Round
+                    </th>
+                    <th>
+                        Player 1
+                    </th>
+                    <th>
+                        Player 2
+                    </th>
+                    <th>
+                        Winner
+                    </th>
                 </tr>
             </thead>
             <tbody id="logbody">
