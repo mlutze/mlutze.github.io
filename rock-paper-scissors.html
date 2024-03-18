@@ -19,7 +19,17 @@
     }
 </style>
 <script>
+    // AIs are functions that take a history and player ID as input and return a shape
+    // History is given as a list of tuples: (null, player 1, player 2, winner)
+    let ais = [
+        ["alwaysCircle", "AI 1", (history, player) => {
+            return "circle";
+        }]
+    ];
+</script>
+<script>
     // TODO store history for AI to use
+    let history = [];
 
     // 0th index is placeholder
     let choices = [null, null, null]
@@ -77,6 +87,10 @@
         context.fill();
     }
 
+    function onChangeSettings() {
+
+    }
+
     function onPick(player, shape) {
         // TODO separate player clicking from AI clicking
         // TODO player clicking needs AI to react
@@ -111,6 +125,8 @@
     }
 
     function reportResult(winner) {
+        history.add([null, choices[1], choices[2], winner]);
+
         let winnerBox = document.getElementById("winner");
         if (winner === 0) {
             winnerBox.innerText = "Draw"
@@ -198,6 +214,16 @@
             drawTriangle(triangle, largeHeight);
         }
 
+
+        let player1 = document.getElementById("player1");
+        let player2 = document.getElementById("player2");
+        for (let ai of ais) {
+            let option = document.createElement("option");
+            option.value = ai[0];
+            option.textContent = ai[1];
+            player1.appendChild(option.cloneNode(true));
+            player2.appendChild(option.cloneNode(true));
+        }
     }
 </script>
 
@@ -210,20 +236,12 @@
         <h1>Player 1</h1>
         <select id="player1">
             <option>User-Controlled</option>
-            <optgroup label="Automatic">
-                <option>AI 1</option>
-                <option>AI 2</option>
-            </optgroup>
         </select>
     </td>
     <td colspan="3" style="text-align: center;">
         <h1>Player 2</h1>
         <select id="player2">
             <option>User-Controlled</option>
-            <optgroup label="Automatic">
-                <option>AI 1</option>
-                <option>AI 2</option>
-            </optgroup>
         </select>
     </td>
 </tr>
