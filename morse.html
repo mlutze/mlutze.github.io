@@ -23,8 +23,15 @@
 
         let diffs = (new diff_match_patch).diff_main(base, changed);
 
+
+        let alphabet = document.getElementById("alphabet").value;
         let correct = new Map();
         let incorrect = new Map();
+        for (let i = 0; i < alphabet.length; i++) {
+            correct.set(alphabet.charAt(i), 0);
+            incorrect.set(alphabet.charAt(i), 0);
+        }
+        
         for (let diff of diffs) {
             console.log(diff[0]);
             console.log(diff[1]);
@@ -50,6 +57,7 @@
         }
 
         let resultBody = document.getElementById("resultBody");
+        resultBody.replaceChildren();
         let totalRow = document.createElement("tr");
         let totalLabel = document.createElement("td");
         let correctTd = document.createElement("td");
@@ -65,7 +73,39 @@
         totalRow.appendChild(percentTd);
         resultBody.appendChild(totalRow);
 
-        // TODO append rows for all the letters, worst to best
+        let scores = [];
+        for (kv of correct) {
+            let letter = kv[0];
+            let numCorrect = kv[1];
+            let numIncorrect = incorrect.get(letter);
+            let sum = numCorrect + numIncorrect;
+            let percent = Math.round(numCorrect * 100 / sum);
+            let score = [
+                letter,
+                numCorrect,
+                numIncorrect,
+                percent
+            ];
+            scores.push(score);
+        }
+        scores.sort((s1, s2) => s1[3] - s2[3]);
+        for (let score of scores) {
+            let row = document.createElement("tr");
+            let labelTd = document.createElement("td");
+            let correctTd = document.createElement("td");
+            let totalTd = document.createElement("td");
+            let percentTd = document.createElement("td");
+            labelTd.innerText = score[0];
+            correctTd.innerText = score[1];
+            totalTd.innerText = score[2];
+            percentTd.innerText = score[3] + "%";
+            row.appendChild(labelTd);
+            row.appendChild(correctTd);
+            row.appendChild(totalTd);
+            row.appendChild(percentTd);
+            resultBody.appendChild(row);
+        }
+        
         // TODO propose button for new alphabet:
         // 1 for every missed letter, plus one for every letter
     }
@@ -204,10 +244,16 @@
 <table>
     <thead>
         <tr>
-            <th colspan="2">Result</th>
+            <th colspan="4">Result</th>
+        </tr>
+        <tr>
+            <th>Letter</th>
+            <th>Correct</th>
+            <th>Total</th>
+            <th>Percent</th>
         </tr>
     </thead>
-    <tbody id="resultBody"></tbody>
+    <tbody id="resultBody", style="text-align: right;"></tbody>
 </table>
 </body>
 </html>
