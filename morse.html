@@ -1,22 +1,71 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <script src="https://cwjs.mastercw.com/cw.min.js"></script>
-    <script src="https://neil.fraser.name/software/diff_match_patch/javascript/diff_match_patch.js"></script>
-    <script>
-        // TODO: need playback speed buttons
-        // TODO: group things to separate setup and execution
-    
+<script src="https://cwjs.mastercw.com/cw.min.js"></script>
+<script src="https://neil.fraser.name/software/diff_match_patch/javascript/diff_match_patch.js"></script>
+<script>
     var secretText = "";
 
-    function diff() {
+    function addToCounter(counter, key) {
+        let curr = counter.get(key);
+        if (curr === undefined) {
+            counter.set(key, 1);
+        } else {
+            counter.set(key, curr + 1);
+        }
+    }
+
+    function getResult() {
         let solution = document.getElementById("solution");
         let submission = document.getElementById("submission");
         let base = solution.value;
         let changed = submission.value;
 
-        dmp.diff_main(solution);
-        // TODO do something with this
+        let diffs = (new diff_match_patch).diff_main(base, changed);
+
+        let correct = new Map();
+        let incorrect = new Map();
+        for (let diff of diffs) {
+            console.log(diff[0]);
+            console.log(diff[1]);
+            let isCorrect = (diff[0] === 0);
+            let letters = diff[1];
+            for (let i = 0; i < letters.length; i++) {
+                let letter = letters.charAt(i);
+                if (isCorrect) {
+                    addToCounter(correct, letter);
+                } else {
+                    addToCounter(incorrect, letter);
+                }
+            }
+        }
+
+        let totalCorrect = 0;
+        let totalIncorrect = 0;
+        for (let kv of correct) {
+            totalCorrect += kv[1];
+        }
+        for (let kv of incorrect) {
+            totalIncorrect += kv[1];
+        }
+
+        let resultBody = document.getElementById("resultBody");
+        let totalRow = document.createElement("tr");
+        let totalLabel = document.createElement("td");
+        let correctTd = document.createElement("td");
+        let sumTd = document.createElement("td");
+        let percentTd = document.createElement("td");
+        totalLabel.innerText = "Total";
+        correctTd.innerText = totalCorrect;
+        sumTd.innerText = totalCorrect + totalIncorrect;
+        percentTd.innerText = Math.round(totalCorrect * 100 / (totalCorrect + totalIncorrect)) + "%";
+        totalRow.appendChild(totalLabel);
+        totalRow.appendChild(correctTd);
+        totalRow.appendChild(sumTd);
+        totalRow.appendChild(percentTd);
+        resultBody.appendChild(totalRow);
+
+        // TODO append rows for all the letters, worst to best
     }
 
     function play() {
@@ -38,10 +87,6 @@
         for (let i = 0; i < length; i++) {
             word += randomChoice(alphabet);
         }
-        console.log(wordMin);
-        console.log(wordMax);
-        console.log(length);
-        console.log(word);
         return word;
     }
     
@@ -75,7 +120,7 @@
         
 
     }
-    </script>
+</script>
 </head>
 <body>
 <table>
@@ -147,12 +192,20 @@
                 <button id="showSolution" onclick="showSolution();">
                     Show Solution
                 </button>
-                <button>
+                <button id="getResult" onclick="getResult();">
                     Get Result
                 </button>
             </td>
         </tr>
     </tfoot>
+</table>
+<table>
+    <thead>
+        <tr>
+            <th colspan="2">Result</th>
+        </tr>
+    </thead>
+    <tbody id="resultBody"></tbody>
 </table>
 </body>
 </html>
