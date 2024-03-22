@@ -123,10 +123,13 @@
 
     function useRecommendedAlphabet() {
         let newAlphabet = "";
+        let granularity = 10;
+        let dampener = 10;
         for (let score of scores) {
             let letter = score[0];
-            let missedPercent = 100 - score[3];
-            newAlphabet += letter.repeat(missedPercent + 1);
+            let proportion = (score[3] + dampener) / (100 + dampener)
+            let count = Math.round(proportion * 10)
+            newAlphabet += letter.repeat(count);
         }
         
         document.getElementById("alphabet").value = newAlphabet;
