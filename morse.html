@@ -25,9 +25,8 @@
     }
 
     function getResult() {
-        let solution = document.getElementById("solution");
         let submission = document.getElementById("submission");
-        let base = solution.value;
+        let base = secretText;
         let changed = submission.value;
 
         let diffs = (new diff_match_patch).diff_main(base, changed);
