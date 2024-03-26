@@ -88,13 +88,13 @@
     }
 
     function onChangeSettings() {
+        // When settings change, clear choices and disable buttons designated for AIs
+        // TODO this function
 
+        // TODO create button to autorun n times when both AIs are selected
     }
 
     function onPick(player, shape) {
-        // TODO separate player clicking from AI clicking
-        // TODO player clicking needs AI to react
-
         // disable all buttons for that player
         let playerButtons = document.getElementsByClassName("button_player" + player);
         for (let button of playerButtons) {
@@ -107,6 +107,20 @@
 
         // record the chosen shape
         choices[player] = shape;
+
+        // If the other player is an AI, then run the AI.
+        let opponent = 3 - player;
+        let aiName = document.getElementById("player" + opponent).value;
+        if (aiName !== "user") {
+            let ai = ais.find((record) => record[0] == aiName)[2];
+            let opponentShape = ai(history, opponent);
+            choices[opponent] = opponentShape;
+
+            // highlight the AI's button
+            let button = document.getElementById("button_player" + opponent + "_" + opponentShape);
+            button.style.backgroundColor = "gold";
+        }
+
         
         // check if other player has also selected
         if (choices[3 - player] !== null) {
@@ -125,7 +139,7 @@
     }
 
     function reportResult(winner) {
-        history.add([null, choices[1], choices[2], winner]);
+        history.push([null, choices[1], choices[2], winner]);
 
         let winnerBox = document.getElementById("winner");
         if (winner === 0) {
@@ -235,13 +249,13 @@
     <td colspan="3" style="text-align: center;">
         <h1>Player 1</h1>
         <select id="player1">
-            <option>User-Controlled</option>
+            <option value="user">User-Controlled</option>
         </select>
     </td>
     <td colspan="3" style="text-align: center;">
         <h1>Player 2</h1>
         <select id="player2">
-            <option>User-Controlled</option>
+            <option value="user">User-Controlled</option>
         </select>
     </td>
 </tr>
