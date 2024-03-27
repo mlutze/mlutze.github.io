@@ -98,6 +98,10 @@
         }
         scores.sort((s1, s2) => s1[3] - s2[3]);
         for (let score of scores) {
+            // skip NAN rows
+            if (score[2] === 0) {
+                continue;
+            }
             let row = document.createElement("tr");
             let labelTd = document.createElement("td");
             let correctTd = document.createElement("td");
@@ -121,6 +125,8 @@
     }
 
     function useRecommendedAlphabet() {
+        // TODO use binomial distribution and use lower bound for recommended practice
+        // TODO accumulate results from multiple runs
         let newAlphabet = "";
         let granularity = 10;
         let dampener = 10;
