@@ -56,7 +56,6 @@
     let smallHeight = 20;
 
     function drawShape(canvas, name, height) {
-        console.log("drawing " + name);
         if (name === "circle") {
             drawCircle(canvas, height);
         } else if (name === "square") {
@@ -105,6 +104,21 @@
 
     function onChangeSettings() {
         newRound();
+    }
+
+    function onClickPlay() {
+        for (let player of [1, 2]) {
+            let aiName = document.getElementById("player" + player).value;
+            let ai = ais.find((record) => record[0] == aiName)[2];
+            let choice = ai(history, player);
+            choices[player] = choice;
+
+            // highlight the AI's button
+            let button = document.getElementById("button_player" + player + "_" + choice);
+            button.style.backgroundColor = "gold";
+        }
+
+        onBothPicked();
     }
 
     function onPick(player, shape) {
@@ -207,15 +221,21 @@
 
     function newRound() {
         choices = [null, null, null];
+        let hasUser = false;
         for (let player of [1, 2]) {
             let aiName = document.getElementById("player" + player).value;
             let playerButtons = document.getElementsByClassName("button_player" + player);
+
+            hasUser |= aiName === "user";
             let shouldDisable = aiName !== "user";
             for (let button of playerButtons) {
                 button.style.backgroundColor = "";
                 button.disabled = shouldDisable
             }
         }
+        
+        let playButton = document.getElementById("playAiRound");
+        playButton.disabled = hasUser;
     }
 
     function beats(s1, s2) {
@@ -264,6 +284,9 @@
             <option value="user">User-Controlled</option>
         </select>
     </td>
+    <td>
+        <button id="playAiRound" disabled="true" onclick="onClickPlay();">Play AI Round</button >
+    </td>
     <td colspan="3" style="text-align: center;">
         <h1>Player 2</h1>
         <select id="player2" onclick="onChangeSettings();">
@@ -287,6 +310,7 @@
         <canvas class="triangle" width="100" height="100"/>
     </button>
     </td>
+    <td></td>
     <td>
     <button id="button_player2_circle" class="button_player2" onclick="onPick(2, 'circle')">
         <canvas class="circle" width="100" height="100"/>
@@ -304,10 +328,10 @@
     </td>
 </tr>
 <tr>
-    <td colspan="6"><h2 style="text-align: center" id="winner"></h2></td>
+    <td colspan="7"><h2 style="text-align: center" id="winner"></h2></td>
 </tr>
 <tr>
-    <td colspan="6">
+    <td colspan="7">
         <table class="center">
             <thead>
                 <tr>
