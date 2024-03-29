@@ -124,16 +124,32 @@
         document.getElementById("useRecommendedAlphabet").disabled = false;
     }
 
+    function lowerBoundRate(successes, total) {
+        let n_1 = successes;
+        let n = total;
+        let p_hat = n_1 / n;
+        let z = 1.96;
+        return p_hat - z * Math.sqrt((p_hat * (1 - p_hat)) / n);
+    }
+
     function useRecommendedAlphabet() {
-        // TODO use binomial distribution and use lower bound for recommended practice
         // TODO accumulate results from multiple runs
         let newAlphabet = "";
         let granularity = 10;
-        let dampener = 10;
         for (let score of scores) {
             let letter = score[0];
-            let proportion = (score[3] + dampener) / (100 + dampener)
-            let count = Math.round(proportion * 10)
+            let correct = score[1];
+            let total = score[2];
+
+            let lowerBound = null;
+            if (total === 0) {
+                lowerBound = 0;
+            } else {
+                lowerBound = Math.max(lowerBoundRate(correct, total), 0);
+            }
+
+            let proportion = 1 - lowerBound
+            let count = Math.round(proportion * granularity)
             newAlphabet += letter.repeat(count);
         }
         
