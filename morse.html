@@ -8,6 +8,11 @@
         margin-left: auto;
         margin-right: auto;
     }
+    .centerblock {
+        margin-left: auto;
+        margin-right: auto;
+        display: block;
+    }
 </style>
 <script src="https://cwjs.mastercw.com/cw.min.js"></script>
 <script src="https://neil.fraser.name/software/diff_match_patch/javascript/diff_match_patch.js"></script>
@@ -15,16 +20,20 @@
     var secretText = "";
     var scores = [];
 
-    function addToCounter(counter, key) {
+    function addNToCounter(counter, key, n) {
         let curr = counter.get(key);
         if (curr === undefined) {
-            counter.set(key, 1);
+            counter.set(key, n);
         } else {
-            counter.set(key, curr + 1);
+            counter.set(key, curr + n);
         }
     }
 
-    function getResult() {
+    function addToCounter(counter, key) {
+        addNToCounter(counter, key, 1)
+    }
+
+    function addToResult() {
         let submission = document.getElementById("submission");
         let base = secretText;
         let changed = submission.value;
@@ -53,6 +62,12 @@
                     }
                 }
             }
+        }
+
+        // add the scores from last time
+        for (let [letter, numCorrect, numTotal, percent] of scores) {
+            addNToCounter(correct, letter, numCorrect);
+            addNToCounter(incorrect, letter, numTotal - numCorrect);
         }
 
         let totalCorrect = 0;
@@ -96,13 +111,9 @@
             ];
             scores.push(score);
         }
-        scores = scores.filter((score) => !isNaN(score[2]));
+        scores = scores.filter((score) => !isNaN(score[3]));
         scores.sort((s1, s2) => s1[3] - s2[3]);
         for (let score of scores) {
-            // skip NAN rows
-            if (score[2] === 0) {
-                continue;
-            }
             let row = document.createElement("tr");
             let labelTd = document.createElement("td");
             let correctTd = document.createElement("td");
@@ -120,9 +131,21 @@
         }
 
         document.getElementById("showSolution").disabled = false;
-        document.getElementById("getResult").disabled = false;
+        document.getElementById("addToResult").disabled = true;
+        document.getElementById("resetResult").disabled = false;
         document.getElementById("play").disabled = false;
         document.getElementById("useRecommendedAlphabet").disabled = false;
+    }
+
+    function resetResult() {
+        scores = []
+        document.getElementById("resultBody").replaceChildren();
+
+        document.getElementById("showSolution").disabled = false;
+        document.getElementById("addToResult").disabled = false;
+        document.getElementById("resetResult").disabled = true;
+        document.getElementById("play").disabled = false;
+        document.getElementById("useRecommendedAlphabet").disabled = true;
     }
 
     function lowerBoundRate(successes, total) {
@@ -202,7 +225,7 @@
 
         document.getElementById("submission").value = "";
         document.getElementById("showSolution").disabled = false;
-        document.getElementById("getResult").disabled = false;
+        document.getElementById("addToResult").disabled = false;
         document.getElementById("play").disabled = false;
         document.getElementById("useRecommendedAlphabet").disabled = true;
     }
@@ -275,10 +298,10 @@
     <tbody>
         <tr>
             <td>
-                <textarea id="submission"></textarea>
+                <textarea id="submission" class="centerblock"></textarea>
             </td>
             <td>
-                <textarea id="solution" disabled="true"></textarea>
+                <textarea id="solution" class="centerblock" disabled="true"></textarea>
             </td>
         </tr>
     </tbody>
@@ -288,8 +311,11 @@
                 <button id="showSolution" onclick="showSolution();" disabled="true">
                     Show Solution
                 </button>
-                <button id="getResult" onclick="getResult();" disabled="true">
-                    Get Result
+                <button id="addToResult" onclick="addToResult();" disabled="true">
+                    Add to Result
+                </button>
+                <button id="resetResult" onclick="resetResult();" disabled="true">
+                    Reset Result
                 </button>
                 <button id="useRecommendedAlphabet" onclick="useRecommendedAlphabet();" disabled="true">
                     Use Recommended Alphabet
