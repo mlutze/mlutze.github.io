@@ -96,6 +96,7 @@
             ];
             scores.push(score);
         }
+        scores = scores.filter((score) => !isNaN(score[2]));
         scores.sort((s1, s2) => s1[3] - s2[3]);
         for (let score of scores) {
             // skip NAN rows
