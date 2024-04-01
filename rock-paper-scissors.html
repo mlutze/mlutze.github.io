@@ -49,6 +49,19 @@
     function incr(counter, key) {
         counter.set(key, getCount(counter, key) + 1);
     }
+    function argMaxes(map) {
+        let maxValue = -Infinity;
+        let maxKeys = null;
+        for (let [key, value] of map) {
+            if (value === maxValue) {
+                maxKeys.push(key);
+            } else if (value > maxValue) {
+                maxKeys = [key];
+                maxValue = value;
+            }
+        }
+        return maxKeys;
+    }
     function argMax(map) {
         let maxValue = -Infinity;
         let maxKey = null;
@@ -161,11 +174,12 @@
                 console.log(shape, rate);
                 rates.set(shape, rate);
             }
-            let choice = argMax(rates);
+            let choice = randomChoice(argMaxes(rates));
             console.log(choice);
             return choice;
         }]
     ];
+    
 </script>
 <script>
     // TODO store history for AI to use
