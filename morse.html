@@ -149,11 +149,14 @@
     }
 
     function lowerBoundRate(successes, total) {
-        let n_1 = successes;
+        // Agresti-Coull method
+        let n_s = successes;
         let n = total;
-        let p_hat = n_1 / n;
+        let z_a = 1.96;
+        let n_bar = n + z_a * z_a;
+        let p_bar = (1 / n_bar) * (n_s + (z_a * z_a) / 2)
         let z = 1.96;
-        return p_hat - z * Math.sqrt((p_hat * (1 - p_hat)) / n);
+        return p_bar - z_a * Math.sqrt((p_bar * (1 - p_bar)) / n_bar);
     }
 
     function useRecommendedAlphabet() {
