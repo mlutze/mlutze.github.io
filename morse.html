@@ -8,6 +8,9 @@
         margin-left: auto;
         margin-right: auto;
     }
+    th {
+        padding: 3px;
+    }
     .centerblock {
         margin-left: auto;
         margin-right: auto;
@@ -19,6 +22,26 @@
 <script>
     var secretText = "";
     var scores = [];
+
+    function lowerBoundRate(successes, total) {
+        // Agresti-Coull method
+        let n_s = successes;
+        let n = total;
+        let z_a = 1.96;
+        let n_bar = n + z_a * z_a;
+        let p_bar = (1 / n_bar) * (n_s + (z_a * z_a) / 2)
+        return p_bar - z_a * Math.sqrt((p_bar * (1 - p_bar)) / n_bar);
+    }
+
+    function calcConfidence(successes, total) {
+        let lowerBound = null;
+        if (total === 0) {
+            lowerBound = 0;
+        } else {
+            lowerBound = Math.max(lowerBoundRate(successes, total), 0);
+        }
+        return lowerBound;
+    }
 
     function addNToCounter(counter, key, n) {
         let curr = counter.get(key);
@@ -86,14 +109,17 @@
         let correctTd = document.createElement("td");
         let sumTd = document.createElement("td");
         let percentTd = document.createElement("td");
+        let confidenceTd = document.createElement("td");
         totalLabel.innerText = "Total";
         correctTd.innerText = totalCorrect;
         sumTd.innerText = totalCorrect + totalIncorrect;
         percentTd.innerText = Math.round(totalCorrect * 100 / (totalCorrect + totalIncorrect)) + "%";
+        confidenceTd.innerText = Math.round(calcConfidence(totalCorrect, totalCorrect + totalIncorrect) * 100) + "%";
         totalRow.appendChild(totalLabel);
         totalRow.appendChild(correctTd);
         totalRow.appendChild(sumTd);
         totalRow.appendChild(percentTd);
+        totalRow.appendChild(confidenceTd);
         resultBody.appendChild(totalRow);
 
         scores = [];
@@ -103,30 +129,35 @@
             let numIncorrect = incorrect.get(letter);
             let sum = numCorrect + numIncorrect;
             let percent = Math.round(numCorrect * 100 / sum);
+            let confidence = Math.round(calcConfidence(numCorrect, sum) * 100);
             let score = [
                 letter,
                 numCorrect,
                 sum,
-                percent
+                percent,
+                confidence
             ];
             scores.push(score);
         }
         scores = scores.filter((score) => !isNaN(score[3]));
-        scores.sort((s1, s2) => s1[3] - s2[3]);
+        scores.sort((s1, s2) => s1[4] - s2[4]);
         for (let score of scores) {
             let row = document.createElement("tr");
             let labelTd = document.createElement("td");
             let correctTd = document.createElement("td");
             let totalTd = document.createElement("td");
             let percentTd = document.createElement("td");
+            let confidenceTd = document.createElement("td");
             labelTd.innerText = score[0];
             correctTd.innerText = score[1];
             totalTd.innerText = score[2];
             percentTd.innerText = score[3] + "%";
+            confidenceTd.innerText = score[4] + "%";
             row.appendChild(labelTd);
             row.appendChild(correctTd);
             row.appendChild(totalTd);
             row.appendChild(percentTd);
+            row.appendChild(confidenceTd);
             resultBody.appendChild(row);
         }
 
@@ -148,34 +179,15 @@
         document.getElementById("useRecommendedAlphabet").disabled = true;
     }
 
-    function lowerBoundRate(successes, total) {
-        // Agresti-Coull method
-        let n_s = successes;
-        let n = total;
-        let z_a = 1.96;
-        let n_bar = n + z_a * z_a;
-        let p_bar = (1 / n_bar) * (n_s + (z_a * z_a) / 2)
-        return p_bar - z_a * Math.sqrt((p_bar * (1 - p_bar)) / n_bar);
-    }
+
 
     function useRecommendedAlphabet() {
-        // TODO accumulate results from multiple runs
         let newAlphabet = "";
-        let granularity = 10;
         for (let score of scores) {
             let letter = score[0];
-            let correct = score[1];
-            let total = score[2];
+            let confidence = score[4];
 
-            let lowerBound = null;
-            if (total === 0) {
-                lowerBound = 0;
-            } else {
-                lowerBound = Math.max(lowerBoundRate(correct, total), 0);
-            }
-
-            let proportion = 1 - lowerBound
-            let count = Math.round(proportion * granularity)
+            let count = 100 - confidence;
             newAlphabet += letter.repeat(count);
         }
         
@@ -329,13 +341,14 @@
 <table>
     <thead>
         <tr>
-            <th colspan="4">Result</th>
+            <th colspan="5">Result</th>
         </tr>
         <tr>
             <th>Letter</th>
             <th>Correct</th>
             <th>Total</th>
             <th>Percent</th>
+            <th>Confidence</th>
         </tr>
     </thead>
     <tbody id="resultBody", style="text-align: right;"></tbody>
