@@ -2,11 +2,133 @@
 <html>
 <head>
     <script>
-        
+
+        const TAU = Math.PI * 2;
+
+        // list of node info: { id: String, name: String }
+        let nodes = [];
+        let edges = [];
+
+        function randomId(prefix) {
+            return prefix + Math.floor(Math.random() * 1000000);
+        }
+
+        function toCartesian(r, theta) {
+            let x = r * Math.cos(theta);
+            let y = r * Math.sin(theta);
+            return [x, y];
+        }
+
+        function dot(ctx, x, y) {
+            let radius = 5;
+            ctx.beginPath();
+            ctx.arc(x, y, radius, 0, TAU);
+            ctx.fill();
+        }
+
+        function coords(id, numNodes) {
+            let center = 250;
+            let radius = 150;
+
+            let [x, y] = toCartesian(radius, TAU * (id / numNodes) + TAU * 3 / 4);
+            return [x + center, y + center];
+        }
+
+        function textCoords(id, numNodes) {
+            let center = 250;
+            let radius = 200;
+
+            let [x, y] = toCartesian(radius, TAU * (id / numNodes) + TAU * 3 / 4);
+            return [x + center, y + center];
+        }
+
+        function render() {
+
+            let canvas = document.getElementById("canvas");
+            let ctx = canvas.getContext("2d");
+            ctx.font = "24px serif";
+            ctx.textAlign = "center";
+
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            for (let index in nodes) {
+                let [x, y] = coords(index, nodes.length);
+                dot(ctx, x, y);
+
+                let [textX, textY] = textCoords(index, nodes.length);
+                let text = nodes[index].name;
+                ctx.fillText(text, textX, textY);
+            }
+        }
+
+        function updateNodes() {
+            let nodeElements = document.getElementsByClassName("node");
+            nodes = [];
+            for (elem of nodeElements) {
+                let data = {
+                    id: elem.id,
+                    name: elem.value
+                };
+                nodes.push(data);
+            }
+
+            updateEdgeTables();
+        }
+
+        function updateEdgeTables() {
+            let addEdgeBody = document.getElementById("addEdgeBody");
+            let trs = [];
+            for (let node of nodes) {
+                let tr = document.createElement("tr");
+
+                let buttonFrom = document.createElement("button");
+                buttonFrom.innerText = node.name;
+                let tdFrom = document.createElement("td");
+                tdFrom.appendChild(buttonFrom);
+                tr.appendChild(tdFrom);
+
+                let buttonTo = document.createElement("button");
+                buttonTo.innerText = node.name;
+                let tdTo = document.createElement("td");
+                tdTo.appendChild(buttonTo);
+                tr.appendChild(tdTo);
+
+                trs.push(tr);
+            }
+
+            addEdgeBody.replaceChildren(...trs);
+        }
+
+        function addNode() {
+            let nodeBody = document.getElementById("nodeBody");
+            let nodeTr = document.createElement("tr");
+
+            let nameTd = document.createElement("td");
+            let nameBox = document.createElement("input");
+            nameBox.className = "node";
+            nameBox.id = randomId("node");
+            nameBox.onkeyup = () => { updateNodes(); render(); }
+            nameTd.appendChild(nameBox);
+            nodeTr.appendChild(nameTd);
+
+            let removeTd = document.createElement("td");
+            let removeButton = document.createElement("button");
+            removeButton.onclick = () => { nodeTr.remove(); updateNodes(); render(); }
+            removeButton.innerText = "Remove";
+            removeTd.appendChild(removeButton);
+            nodeTr.appendChild(removeTd);
+
+            nodeBody.appendChild(nodeTr);
+
+            updateNodes();
+
+            render();
+        }
+
     </script>
 </head>
 <body>
-    <canvas id="canvas" width="300" height="300"></canvas>
+    <canvas id="canvas" width="500" height="500"></canvas>
     <table>
         <thead>
             <tr>
@@ -16,7 +138,7 @@
         <tbody id="nodeBody">
         </tbody>
         <tfoot>
-            <tr><td colspan="2"><button>Add</button></td></tr>
+            <tr><td colspan="2"><button onclick="addNode();">Add</button></td></tr>
         </tfoot>
     </table>
     <table>
@@ -26,7 +148,7 @@
                 <th>Node 2</th>
             </tr>
         </thead>
-        <tbody id="addBody">
+        <tbody id="addEdgeBody">
         </tbody>
     </table>
     <table>
@@ -36,7 +158,6 @@
             <th></th>
         </thead>
         <tbody id="deleteBody">
-
         </tbody>
     </table>
 </body>
