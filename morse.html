@@ -148,16 +148,27 @@
             let totalTd = document.createElement("td");
             let percentTd = document.createElement("td");
             let confidenceTd = document.createElement("td");
-            labelTd.innerText = score[0];
+
+            let reminderButton = document.createElement("button");
+            reminderButton.innerText = score[0];
+            reminderButton.onclick = () => {
+                let wpm = document.getElementById("wpm").value;
+                cw.play(score[0], {wpm});
+            }
+
+            labelTd.appendChild(reminderButton);
             correctTd.innerText = score[1];
             totalTd.innerText = score[2];
             percentTd.innerText = score[3] + "%";
             confidenceTd.innerText = score[4] + "%";
+
+
             row.appendChild(labelTd);
             row.appendChild(correctTd);
             row.appendChild(totalTd);
             row.appendChild(percentTd);
             row.appendChild(confidenceTd);
+
             resultBody.appendChild(row);
         }
 
