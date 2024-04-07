@@ -7,7 +7,11 @@
 
         // list of node info: { id: String, name: String }
         let nodes = [];
+
+        // list of edge info: { id: String, src: String, dest: String }
         let edges = [];
+
+        let selectedSrc = null;
 
         function randomId(prefix) {
             return prefix + Math.floor(Math.random() * 1000000);
@@ -75,20 +79,38 @@
             updateEdgeTables();
         }
 
+        function selectSrc(id) {
+            selectedSrc = id;
+        }
+
+        function selectDst(id) {
+            // TODO
+        }
+
         function updateEdgeTables() {
             let addEdgeBody = document.getElementById("addEdgeBody");
             let trs = [];
             for (let node of nodes) {
                 let tr = document.createElement("tr");
 
+                // TODO need stable IDs: cannot just recreate each time (?)
+                // TODO or maybe relate these IDs to the node IDs!
+                // node123 <-> src123 <-> dst123
                 let buttonFrom = document.createElement("button");
-                buttonFrom.innerText = node.name;
+                buttonFrom.innerText = node.name || "_";
+                buttonFromId = randomId("src");
+                buttonFrom.id = buttonFromId;
+                buttonFrom.onclick = () => { selectSrc(buttonFromId); updateNodes(); }
                 let tdFrom = document.createElement("td");
                 tdFrom.appendChild(buttonFrom);
                 tr.appendChild(tdFrom);
 
                 let buttonTo = document.createElement("button");
-                buttonTo.innerText = node.name;
+                buttonTo.innerText = node.name || "_";
+                buttonToId = randomId("dst");
+                buttonTo.id = buttonToId;
+                buttonTo.onclick = () => { selectDst(buttonToId); updateNodes(); }
+                buttonTo.disabled = (selectedSrc === null);
                 let tdTo = document.createElement("td");
                 tdTo.appendChild(buttonTo);
                 tr.appendChild(tdTo);
