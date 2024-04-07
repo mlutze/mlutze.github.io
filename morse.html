@@ -139,7 +139,7 @@
             ];
             scores.push(score);
         }
-        scores = scores.filter((score) => !isNaN(score[3]));
+
         scores.sort((s1, s2) => s1[4] - s2[4]);
         for (let score of scores) {
             let row = document.createElement("tr");
