@@ -57,6 +57,7 @@
     }
 
     function addToResult() {
+        // TODO separate score tracking and displaying
         let submission = document.getElementById("submission");
         let base = secretText;
         let changed = submission.value;
@@ -176,6 +177,8 @@
         document.getElementById("showSolution").disabled = false;
         document.getElementById("addToResult").disabled = true;
         document.getElementById("resetResult").disabled = false;
+        document.getElementById("importResult").disabled = true;
+        document.getElementById("exportResult").disabled = false;
         document.getElementById("play").disabled = false;
         document.getElementById("useRecommendedAlphabet").disabled = false;
     }
@@ -233,6 +236,23 @@
         return text.slice(0, length);
     }
 
+    function importResult() {
+        let result = prompt("Paste the result JSON string here.");
+        if (result !== null && result !== "") {
+            try {
+                let parsed = JSON.parse(result);
+                scores = parsed;
+            } catch (error) {
+                // TODO report to user somehow
+            }
+        }
+    }
+
+    function exportResult() {
+        let json = JSON.stringify(scores);
+        alert(json);
+    }
+
     function generate() {
         let alphabet = document.getElementById("alphabet").value;
         let wordMin = parseInt(document.getElementById("wordMin").value);
@@ -256,11 +276,6 @@
     function showSolution() {
         let solution = document.getElementById("solution");
         solution.value = secretText;
-    }
-
-    onload = function() {
-        
-
     }
 </script>
 </head>
@@ -312,25 +327,22 @@
     </tfoot>
 </table>
 <table>
-    <thead>
-        <tr>
-            <th>Submission</th>
-            <th>Solution</th>
-        </tr>
-    </thead>
     <tbody>
         <tr>
+            <th>Submission</th>
             <td>
-                <textarea id="submission" class="centerblock"></textarea>
+                <input id="submission" class="centerblock" size="100"/>
             </td>
+            <tr>
+            <th>Solution</th>
             <td>
-                <textarea id="solution" class="centerblock" disabled="true"></textarea>
+                <input id="solution" class="centerblock" size="100" disabled="true"/>
             </td>
         </tr>
     </tbody>
     <tfoot>
         <tr>
-            <td colspan="2">
+            <td colspan="2" align="center">
                 <button id="showSolution" onclick="showSolution();" disabled="true">
                     Show Solution
                 </button>
@@ -339,6 +351,12 @@
                 </button>
                 <button id="resetResult" onclick="resetResult();" disabled="true">
                     Reset Result
+                </button>
+                <button id="importResult" onclick="importResult();">
+                    Import Result
+                </button>
+                <button id="exportResult" onclick="exportResult();" disabled="true">
+                    Export Result
                 </button>
                 <button id="useRecommendedAlphabet" onclick="useRecommendedAlphabet();" disabled="true">
                     Use Recommended Alphabet
