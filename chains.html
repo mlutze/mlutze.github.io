@@ -5,7 +5,7 @@
 
         const TAU = Math.PI * 2;
 
-        // list of node info: { id: String, name: String }
+        // list of node info: { id: number, name: String }
         let nodes = [];
 
         // list of edge info: { id: String, src: String, dest: String }
@@ -15,6 +15,15 @@
 
         function randomId(prefix) {
             return prefix + Math.floor(Math.random() * 1000000);
+        }
+
+        function extractId(namedId) {
+            let regex = /^[a-z]*([0-9])+$/
+            return parseInt(namedId.match(regex)[1]);
+        }
+
+        function mkId(prefix, id) {
+            return prefix + id;
         }
 
         function toCartesian(r, theta) {
@@ -70,7 +79,7 @@
             nodes = [];
             for (elem of nodeElements) {
                 let data = {
-                    id: elem.id,
+                    id: extractId(elem.id),
                     name: elem.value
                 };
                 nodes.push(data);
@@ -84,7 +93,11 @@
         }
 
         function selectDst(id) {
-            // TODO
+            edges.push({
+                // TODO edge itself needs an ID?
+                src: selectedSrc,
+                dst: id
+            })
         }
 
         function updateEdgeTables() {
@@ -96,20 +109,21 @@
                 // TODO need stable IDs: cannot just recreate each time (?)
                 // TODO or maybe relate these IDs to the node IDs!
                 // node123 <-> src123 <-> dst123
+                // do these even actually need IDs?
                 let buttonFrom = document.createElement("button");
                 buttonFrom.innerText = node.name || "_";
-                buttonFromId = randomId("src");
+                buttonFromId = mkId("src", node.id);
                 buttonFrom.id = buttonFromId;
-                buttonFrom.onclick = () => { selectSrc(buttonFromId); updateNodes(); }
+                buttonFrom.onclick = () => { selectSrc(node.id); updateNodes(); }
                 let tdFrom = document.createElement("td");
                 tdFrom.appendChild(buttonFrom);
                 tr.appendChild(tdFrom);
 
                 let buttonTo = document.createElement("button");
                 buttonTo.innerText = node.name || "_";
-                buttonToId = randomId("dst");
+                buttonToId = mkId("dst", node.id);
                 buttonTo.id = buttonToId;
-                buttonTo.onclick = () => { selectDst(buttonToId); updateNodes(); }
+                buttonTo.onclick = () => { selectDst(node.id); updateNodes(); }
                 buttonTo.disabled = (selectedSrc === null);
                 let tdTo = document.createElement("td");
                 tdTo.appendChild(buttonTo);
