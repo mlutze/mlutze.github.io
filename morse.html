@@ -88,9 +88,9 @@
         }
 
         // add the scores from last time
-        for (let [letter, numCorrect, numTotal, percent] of scores) {
-            addNToCounter(correct, letter, numCorrect);
-            addNToCounter(incorrect, letter, numTotal - numCorrect);
+        for (let score of scores) {
+            addNToCounter(correct, score.letter, score.correct);
+            addNToCounter(incorrect, score.letter, score.total - score.correct);
         }
 
         let totalCorrect = 0;
@@ -128,19 +128,20 @@
             let numCorrect = kv[1];
             let numIncorrect = incorrect.get(letter);
             let sum = numCorrect + numIncorrect;
-            let percent = Math.round(numCorrect * 100 / sum);
-            let confidence = Math.round(calcConfidence(numCorrect, sum) * 100);
-            let score = [
-                letter,
-                numCorrect,
-                sum,
-                percent,
-                confidence
-            ];
+            let percent = numCorrect / sum;
+            let confidence = calcConfidence(numCorrect, sum);
+            let score = {
+                letter: letter,
+                correct: numCorrect,
+                total: sum,
+                rate: percent,
+                confidence: confidence,
+            };
             scores.push(score);
         }
 
-        scores.sort((s1, s2) => s1[4] - s2[4]);
+        scores.sort((s1, s2) => s1.total - s2.total);
+        scores.sort((s1, s2) => s1.confidence - s2.confidence);
         for (let score of scores) {
             let row = document.createElement("tr");
             let labelTd = document.createElement("td");
@@ -150,17 +151,17 @@
             let confidenceTd = document.createElement("td");
 
             let reminderButton = document.createElement("button");
-            reminderButton.innerText = score[0];
+            reminderButton.innerText = score.letter;
             reminderButton.onclick = () => {
                 let wpm = document.getElementById("wpm").value;
-                cw.play(score[0], {wpm});
+                cw.play(score.letter, {wpm});
             }
 
             labelTd.appendChild(reminderButton);
-            correctTd.innerText = score[1];
-            totalTd.innerText = score[2];
-            percentTd.innerText = score[3] + "%";
-            confidenceTd.innerText = score[4] + "%";
+            correctTd.innerText = score.correct;
+            totalTd.innerText = score.total;
+            percentTd.innerText = Math.round(score.rate * 100) + "%";
+            confidenceTd.innerText = Math.round(score.confidence * 100) + "%";
 
 
             row.appendChild(labelTd);
@@ -195,11 +196,8 @@
     function useRecommendedAlphabet() {
         let newAlphabet = "";
         for (let score of scores) {
-            let letter = score[0];
-            let confidence = score[4];
-
-            let count = 100 - confidence;
-            newAlphabet += letter.repeat(count);
+            let count = 100 - score.confidence;
+            newAlphabet += score.letter.repeat(count);
         }
         
         document.getElementById("alphabet").value = newAlphabet;
