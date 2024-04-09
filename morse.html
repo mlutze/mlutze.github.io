@@ -56,51 +56,13 @@
         addNToCounter(counter, key, 1)
     }
 
-    function addToResult() {
-        // TODO separate score tracking and displaying
-        let submission = document.getElementById("submission");
-        let base = secretText;
-        let changed = submission.value;
-
-        let diffs = (new diff_match_patch).diff_main(base, changed);
-
-
-        let alphabet = document.getElementById("alphabet").value;
-        let correct = new Map();
-        let incorrect = new Map();
-        for (let i = 0; i < alphabet.length; i++) {
-            correct.set(alphabet.charAt(i), 0);
-            incorrect.set(alphabet.charAt(i), 0);
-        }
-        
-        for (let diff of diffs) {
-            let isCorrect = (diff[0] === 0);
-            let letters = diff[1];
-            for (let i = 0; i < letters.length; i++) {
-                let letter = letters.charAt(i);
-                if (letter !== " ") {
-                    if (isCorrect) {
-                        addToCounter(correct, letter);
-                    } else {
-                        addToCounter(incorrect, letter);
-                    }
-                }
-            }
-        }
-
-        // add the scores from last time
-        for (let score of scores) {
-            addNToCounter(correct, score.letter, score.correct);
-            addNToCounter(incorrect, score.letter, score.total - score.correct);
-        }
-
+    function displayResult() {
         let totalCorrect = 0;
-        let totalIncorrect = 0;
-        for (let kv of correct) {
-            totalCorrect += kv[1];
-        }
-        for (let kv of incorrect) {
-            totalIncorrect += kv[1];
+        let totalAttempted = 0;
+        for (let score of scores) {
+            console.log(score.num)
+            totalCorrect += score.correct;
+            totalAttempted += score.total;
         }
 
         let resultBody = document.getElementById("resultBody");
@@ -113,9 +75,9 @@
         let confidenceTd = document.createElement("td");
         totalLabel.innerText = "Total";
         correctTd.innerText = totalCorrect;
-        sumTd.innerText = totalCorrect + totalIncorrect;
-        percentTd.innerText = Math.round(totalCorrect * 100 / (totalCorrect + totalIncorrect)) + "%";
-        confidenceTd.innerText = Math.round(calcConfidence(totalCorrect, totalCorrect + totalIncorrect) * 100) + "%";
+        sumTd.innerText = totalAttempted;
+        percentTd.innerText = Math.round(totalCorrect * 100 / totalAttempted) + "%";
+        confidenceTd.innerText = Math.round(calcConfidence(totalCorrect, totalAttempted) * 100) + "%";
         totalRow.appendChild(totalLabel);
         totalRow.appendChild(correctTd);
         totalRow.appendChild(sumTd);
@@ -123,25 +85,9 @@
         totalRow.appendChild(confidenceTd);
         resultBody.appendChild(totalRow);
 
-        scores = [];
-        for (kv of correct) {
-            let letter = kv[0];
-            let numCorrect = kv[1];
-            let numIncorrect = incorrect.get(letter);
-            let sum = numCorrect + numIncorrect;
-            let percent = numCorrect / sum;
-            let confidence = calcConfidence(numCorrect, sum);
-            let score = {
-                letter: letter,
-                correct: numCorrect,
-                total: sum,
-                rate: percent,
-                confidence: confidence,
-            };
-            scores.push(score);
-        }
-
-        scores.sort((s1, s2) => s1.total - s2.total);
+        // sort by reverse total first
+        // because a 0 with lots of tries is worse than a 0 with few
+        scores.sort((s1, s2) => s2.total - s1.total);
         scores.sort((s1, s2) => s1.confidence - s2.confidence);
         for (let score of scores) {
             let row = document.createElement("tr");
@@ -183,6 +129,65 @@
         document.getElementById("useRecommendedAlphabet").disabled = false;
     }
 
+    function addToResult() {
+        // TODO separate score tracking and displaying
+        let submission = document.getElementById("submission");
+        let base = secretText;
+        let changed = submission.value;
+
+        let diffs = (new diff_match_patch).diff_main(base, changed);
+
+
+        let alphabet = document.getElementById("alphabet").value;
+        let correct = new Map();
+        let incorrect = new Map();
+        for (let i = 0; i < alphabet.length; i++) {
+            correct.set(alphabet.charAt(i), 0);
+            incorrect.set(alphabet.charAt(i), 0);
+        }
+        
+        for (let diff of diffs) {
+            let isCorrect = (diff[0] === 0);
+            let letters = diff[1];
+            for (let i = 0; i < letters.length; i++) {
+                let letter = letters.charAt(i);
+                if (letter !== " ") {
+                    if (isCorrect) {
+                        addToCounter(correct, letter);
+                    } else {
+                        addToCounter(incorrect, letter);
+                    }
+                }
+            }
+        }
+
+        // add the scores from last time
+        for (let score of scores) {
+            addNToCounter(correct, score.letter, score.correct);
+            addNToCounter(incorrect, score.letter, score.total - score.correct);
+        }
+
+        scores = [];
+        for (kv of correct) {
+            let letter = kv[0];
+            let numCorrect = kv[1];
+            let numIncorrect = incorrect.get(letter);
+            let sum = numCorrect + numIncorrect;
+            let percent = numCorrect / sum;
+            let confidence = calcConfidence(numCorrect, sum);
+            let score = {
+                letter: letter,
+                correct: numCorrect,
+                total: sum,
+                rate: percent,
+                confidence: confidence,
+            };
+            scores.push(score);
+        }
+
+        displayResult()
+    }
+
     function resetResult() {
         scores = []
         document.getElementById("resultBody").replaceChildren();
@@ -190,6 +195,8 @@
         document.getElementById("showSolution").disabled = false;
         document.getElementById("addToResult").disabled = false;
         document.getElementById("resetResult").disabled = true;
+        document.getElementById("importResult").disabled = false;
+        document.getElementById("exportResult").disabled = true;
         document.getElementById("play").disabled = false;
         document.getElementById("useRecommendedAlphabet").disabled = true;
     }
@@ -242,8 +249,9 @@
             try {
                 let parsed = JSON.parse(result);
                 scores = parsed;
+                displayResult();
             } catch (error) {
-                // TODO report to user somehow
+                alert("Invalid JSON")
             }
         }
     }

@@ -8,7 +8,7 @@
         // list of node info: { id: number, name: String }
         let nodes = [];
 
-        // list of edge info: { id: String, src: String, dest: String }
+        // list of edge info: { id: String, src: String, dst: String }
         let edges = [];
 
         let selectedSrc = null;
@@ -18,7 +18,7 @@
         }
 
         function extractId(namedId) {
-            let regex = /^[a-z]*([0-9])+$/
+            let regex = /^[a-z]*([0-9]+)$/
             return parseInt(namedId.match(regex)[1]);
         }
 
@@ -72,6 +72,20 @@
                 let text = nodes[index].name;
                 ctx.fillText(text, textX, textY);
             }
+
+            for (let edge of edges) {
+                let [srcX, srcY] = coords(nodes.findIndex((node) => node.id == edge.src), nodes.length);
+                let [dstX, dstY] = coords(nodes.findIndex((node) => node.id == edge.dst), nodes.length);
+
+                let controlX = 250 + Math.random() * 200 - 100; 
+                let controlY = 250 + Math.random() * 200 - 100;
+
+                ctx.beginPath();
+                ctx.moveTo(srcX, srcY);
+                // ctx.lineTo(dstX, dstY);
+                ctx.quadraticCurveTo(controlX, controlY, dstX, dstY);
+                ctx.stroke();
+            }
         }
 
         function updateNodes() {
@@ -90,6 +104,8 @@
 
         function selectSrc(id) {
             selectedSrc = id;
+
+            updateEdgeTables();
         }
 
         function selectDst(id) {
@@ -98,6 +114,8 @@
                 src: selectedSrc,
                 dst: id
             })
+
+            render();
         }
 
         function updateEdgeTables() {
@@ -115,6 +133,9 @@
                 buttonFromId = mkId("src", node.id);
                 buttonFrom.id = buttonFromId;
                 buttonFrom.onclick = () => { selectSrc(node.id); updateNodes(); }
+                if (selectedSrc === node.id) {
+                    buttonFrom.style.backgroundColor = "gold";
+                }
                 let tdFrom = document.createElement("td");
                 tdFrom.appendChild(buttonFrom);
                 tr.appendChild(tdFrom);
@@ -124,7 +145,7 @@
                 buttonToId = mkId("dst", node.id);
                 buttonTo.id = buttonToId;
                 buttonTo.onclick = () => { selectDst(node.id); updateNodes(); }
-                buttonTo.disabled = (selectedSrc === null);
+                buttonTo.disabled = (selectedSrc === null || selectedSrc == node.id);
                 let tdTo = document.createElement("td");
                 tdTo.appendChild(buttonTo);
                 tr.appendChild(tdTo);
