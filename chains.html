@@ -110,7 +110,7 @@
 
         function selectDst(id) {
             edges.push({
-                // TODO edge itself needs an ID?
+                id: randomId("edge"),
                 src: selectedSrc,
                 dst: id
             })
@@ -119,6 +119,11 @@
         }
 
         function updateEdgeTables() {
+            updateAddEdgeTable();
+            updateDeleteEdgeTable();
+        }
+
+        function updateAddEdgeTable() {
             let addEdgeBody = document.getElementById("addEdgeBody");
             let trs = [];
             for (let node of nodes) {
@@ -156,6 +161,33 @@
             addEdgeBody.replaceChildren(...trs);
         }
 
+        function updateDeleteEdgeTable() {
+            let deleteEdgeBody = document.getElementById("deleteEdgeBody");
+            let trs = []
+            for (let edge of edges) {
+                let tr = document.createElement("tr");
+                
+                let srcName = nodes.find((node) => node.id == edge.src).name;
+                let srcTd = document.createElement("td");
+                srcTd.innerText = srcName;
+                tr.appendChild(srcTd);
+
+                let dstName = nodes.find((node) => node.id == edge.dst).name;
+                let dstTd = document.createElement("td");
+                dstTd.innerText = dstName;
+                tr.appendChild(dstTd);
+
+                let removeButton = document.createElement("button");
+                removeButton.innerText = "Remove";
+                removeButton.onclick = () => { edges = edges.filter((e) => e.id != edge.id); render(); updateEdgeTables() };
+                tr.append(removeButton);
+
+                trs.push(tr);
+            }
+
+            deleteEdgeBody.replaceChildren(...trs);
+        }
+
         function addNode() {
             let nodeBody = document.getElementById("nodeBody");
             let nodeTr = document.createElement("tr");
@@ -180,6 +212,14 @@
             updateNodes();
 
             render();
+        }
+
+        function removeRandomEdge() {
+            let index = Math.floor(Math.random() * edges.length);
+            edges.splice(index, 1);
+
+            render();
+            updateEdgeTables();
         }
 
     </script>
@@ -214,8 +254,9 @@
             <th>Node 2</th>
             <th></th>
         </thead>
-        <tbody id="deleteBody">
+        <tbody id="deleteEdgeBody">
         </tbody>
     </table>
+    <button onclick="removeRandomEdge();">Remove Random Edge</button>
 </body>
 </html>
