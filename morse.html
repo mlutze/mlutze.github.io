@@ -206,7 +206,7 @@
     function useRecommendedAlphabet() {
         let newAlphabet = "";
         for (let score of scores) {
-            let count = 100 - score.confidence;
+            let count = 100 - score.confidence * 100;
             newAlphabet += score.letter.repeat(count);
         }
         
