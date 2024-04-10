@@ -1,6 +1,14 @@
 <!DOCTYPE html>
 <html>
 <head>
+    <style>
+        table td {
+            vertical-align: top;
+        }
+        table {
+            padding: 1ex;
+        }
+    </style>
     <script>
 
         const TAU = Math.PI * 2;
@@ -121,6 +129,7 @@
         function updateEdgeTables() {
             updateAddEdgeTable();
             updateDeleteEdgeTable();
+            updateGroupsTable();
         }
 
         function updateAddEdgeTable() {
@@ -188,6 +197,21 @@
             deleteEdgeBody.replaceChildren(...trs);
         }
 
+        function updateGroupsTable() {
+            let groupsBody = document.getElementById("groupsBody");
+            let groups = getGroups();
+            console.log(groups);
+            let trs = [];
+            for (let group of groups) {
+                let tr = document.createElement("tr");
+                let td = document.createElement("td");
+                td.innerText = group.map((node) => (node.name)).join(", ")
+                tr.appendChild(td);
+                trs.push(tr);
+            }
+            groupsBody.replaceChildren(...trs);
+        }
+
         function addNode() {
             let nodeBody = document.getElementById("nodeBody");
             let nodeTr = document.createElement("tr");
@@ -222,41 +246,112 @@
             updateEdgeTables();
         }
 
+        function getGroups() {
+            let res = [];
+            let index = 0;
+            let stack = [];
+            let indices = new Map();
+            let lowlinks = new Map();
+
+            function strongconnect(node) {
+                indices.set(node, index);
+                lowlinks.set(node, index)
+                index++;
+                stack.push(node);
+
+                for (edge of edges) {
+                    let other = null;
+                    if (edge.src === node) {
+                        other = edge.dst;
+                    } else if (edge.dst === node) {
+                        other = edge.src;
+                    } else {
+                        continue;
+                    }
+                    if (!indices.has(other)) {
+                        strongconnect(other);
+                        lowlinks.set(node, Math.min(lowlinks.get(node), lowlinks.get(other)))
+                    } else if (stack.includes(other)) {
+                        lowlinks.set(node, Math.min(lowlinks.get(node), lowlinks.get(other)))
+                    }
+                }
+
+                if (lowlinks.get(node) === indices.get(node)) {
+                    let scc = []
+                    let other = null;
+                    do {
+                        other = stack.pop();
+                        scc.push(other)
+                    } while (node !== other)
+                    res.push(scc);
+                }
+            }
+
+
+            for (let node of nodes) {
+                if (!indices.has(node.id)) {
+                    strongconnect(node.id)
+                }
+            }
+
+            return res.map((scc) =>
+                scc.map((node) => nodes.find((n) => n.id === node))
+            )
+        }
+
     </script>
 </head>
 <body>
     <canvas id="canvas" width="500" height="500"></canvas>
     <table>
-        <thead>
-            <tr>
-                <th colspan="2">Nodes</th>
-            </tr>
-        </thead>
-        <tbody id="nodeBody">
-        </tbody>
-        <tfoot>
-            <tr><td colspan="2"><button onclick="addNode();">Add</button></td></tr>
-        </tfoot>
-    </table>
+    <tr>
+        <td>
+            <table>
+                <thead>
+                    <tr>
+                        <th colspan="2">Nodes</th>
+                    </tr>
+                </thead>
+                <tbody id="nodeBody">
+                </tbody>
+                <tfoot>
+                    <tr><td colspan="2"><button onclick="addNode();">Add</button></td></tr>
+                </tfoot>
+            </table>
+        </td>
+        <td>
     <table>
         <thead>
             <tr>
-                <th>Node 1</th>
-                <th>Node 2</th>
+                <th colspan="3">Add Edges</th>
             </tr>
         </thead>
         <tbody id="addEdgeBody">
         </tbody>
     </table>
+    </td>
+    <td>
     <table>
         <thead>
-            <th>Node 1</th>
-            <th>Node 2</th>
-            <th></th>
+            <tr>
+                <th colspan="3">Remove Edges</th>
+            </tr>
         </thead>
         <tbody id="deleteEdgeBody">
         </tbody>
     </table>
+    </td>
+    <td>
+    <table>
+        <thead><th>Groups</th></thead>
+        <tbody id="groupsBody">
+        </tbody>
+    </table>
+    </td>
+    <td>
     <button onclick="removeRandomEdge();">Remove Random Edge</button>
+    </td>
+    </tr>
+    </table>
 </body>
 </html>
