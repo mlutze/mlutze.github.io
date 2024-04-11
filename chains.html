@@ -107,6 +107,11 @@
                 nodes.push(data);
             }
 
+            edges = edges.filter(edge => 
+                nodes.some(node => node.id == edge.src) &&
+                nodes.some(node => node.id == edge.dst)
+            );
+
             updateEdgeTables();
         }
 
