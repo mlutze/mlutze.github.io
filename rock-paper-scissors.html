@@ -125,33 +125,9 @@
                 }
             }
         }],
-        ["beatBeatWinRepeat", "Harper", (history, player) => {
-            if (history.length === 0) {
-                return randomShape();
-            } else {
-                // if I won then I do whatever beats "whatever beats what I played"
-                // else something random
-                let lastRound = history[history.length - 1];
-                if (lastRound[3] === player) {
-                    return beater(beater(lastRound[player]));
-                } else {
-                    return randomShape();
-                }
-            }
-        }],
-        ["beat3WinRepeat", "Peter", (history, player) => {
-            if (history.length === 0) {
-                return randomShape();
-            } else {
-                // if I lost then I copy what they did
-                // else something random
-                let lastRound = history[history.length - 1];
-                if (lastRound[3] === (3 - player)) {
-                    return lastRound[3 - player];
-                } else {
-                    return randomShape();
-                }
-            }
+        ["usuallySquare", "Gordan", (history, player) => {
+            // play paper 50% of the time
+            return randomChoice(["square", "square", "circle", "triangle"]);
         }],
         ["reuseBest", "Oscar", (history, player) => {
             // see which shape has historically performed the best
