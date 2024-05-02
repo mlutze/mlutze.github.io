@@ -20,8 +20,19 @@
 <script src="https://cwjs.mastercw.com/cw.min.js"></script>
 <script src="https://neil.fraser.name/software/diff_match_patch/javascript/diff_match_patch.js"></script>
 <script>
+    // TODO migrate to jscwlib so the onPlay etc. stuff works
     var secretText = "";
     var scores = [];
+
+    cw.onPlay = () => { 
+        document.getElementById("play").disabled = true;
+        document.getElementById("stop").disabled = false;
+    };
+
+    cw.onFinished = () => {
+        document.getElementById("play").disabled = false;
+        document.getElementById("stop").disabled = true;
+    }
 
     function lowerBoundRate(successes, total) {
         // Agresti-Coull method
@@ -218,6 +229,10 @@
         cw.play(secretText, {wpm});
     }
 
+    function stop() {
+        cw.stop();
+    }
+
     function randomChoice(arr) {
         return arr[randomInt(0, arr.length)];
     }
@@ -332,6 +347,9 @@
                 </button>
                 <button id="play" onclick="play();" disabled="true">
                     Play
+                </button>
+                <button id="stop" onclick="stop();" disabled="true">
+                    Stop
                 </button>
             </td>
         </tr>
