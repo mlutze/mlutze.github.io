@@ -2,6 +2,38 @@
 <html>
 <head>
 <script>
+    /** @type {array<string>} */
+    let names = [];
+
+    /** @type {map<string, map<string, int>>} */
+    let valences = new Map();
+
+    function getValence(observer, object) {
+        return valences.get(observer).get(object);
+    }
+
+    function setValence(observer, object, n) {
+        valences.get(observer).set(object, n)
+    }
+
+    function transformValence(observer, object, func) {
+        let valence = getValence(observer, object);
+        setValence(observer, object, func(valence));
+    }
+
+    function addName(name) {
+        valences.set(name, new Map())
+        for (object of names) {
+            setValence(name, object, 0)
+        }
+        for (observer of names) {
+            setValence(observer, name, 0)
+        }
+        names.push(name);
+    }
+
+    
+
     // table of all valence scores
     // select a person
     // show all valence scores
