@@ -32,6 +32,31 @@
         names.push(name);
     }
 
+    function render() {
+        let table = document.getElementById("valenceTable");
+        table.replaceChildren();
+        let trHead = document.createElement("tr");
+        table.appendChild(trHead);
+        let empty = document.createElement("th");
+        trHead.appendChild(empty);
+        for (object of names) {
+            let th = document.createElement("th");
+            trHead.appendChild(th);
+            th.innerText = object;
+        }
+        for (observer of names) {
+            let tr = document.createElement("tr");
+            table.appendChild(tr);
+            let th = document.createElement("th");
+            tr.appendChild(th);
+            th.innerText = observer;
+            for (object of names) {
+                let td = document.createElement("td");
+                tr.appendChild(td);
+                td.innerText = getValence(observer, object);
+            }
+        }
+    }
     
 
     // table of all valence scores
@@ -43,6 +68,8 @@
 </script>
 </head>
 <body>
+<table>
 
+</table>
 </body>
 </html>
