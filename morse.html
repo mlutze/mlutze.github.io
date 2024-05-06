@@ -118,8 +118,6 @@
             let reminderButton = document.createElement("button");
             reminderButton.innerText = score.letter;
             reminderButton.onclick = () => {
-                let wpm = document.getElementById("wpm").value;
-                cw.setWpm(wpm);
                 cw.play(score.letter);
             }
 
