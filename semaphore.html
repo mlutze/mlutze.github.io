@@ -7,6 +7,24 @@ function animate(string, speed, canvas) {
     // TODO displays the string as semaphore on the given canvas
 }
 
+function drawFrame(left, right, canvas) {
+    // TODO displays figure with arms turned to the given angle
+}
+
+function drawBody(canvas) {
+    // head in center
+    let center = canvas.height / 2;
+    let radius = 20;
+    let context = canvas.getContext("2d");
+    context.beginPath();
+    context.arc(center, center, radius, 0, 2 * Math.PI);
+    context.fill();
+    // body below
+}
+
+onload = () => {
+    drawBody(document.getElementById("canvas"));
+}
 // canvas for display
 // alphabet
 // speed controls
@@ -16,6 +34,6 @@ function animate(string, speed, canvas) {
 </script>
 </head>
 <body>
-    
+    <canvas id="canvas" width="500" height="500"></canvas>
 </body>
 </html>
