@@ -2,6 +2,8 @@
 <html>
 <head>
 <script>
+
+// TODO try steal svgs from wikipedia
 // 
 function animate(string, speed, canvas) {
     // TODO displays the string as semaphore on the given canvas
@@ -14,11 +16,16 @@ function drawFrame(left, right, canvas) {
 function drawBody(canvas) {
     // head in center
     let center = canvas.height / 2;
-    let radius = 20;
+    let radius = canvas.height / 20;
     let context = canvas.getContext("2d");
     context.beginPath();
     context.arc(center, center, radius, 0, 2 * Math.PI);
     context.fill();
+
+    let bodyWidth = radius * 4;
+    let bodyHeight = bodyWidth * 2;
+
+    context.fillRect(canvas.height / 2 - (radius * 2), canvas.height / 2 + 30, bodyWidth, bodyHeight)
     // body below
 }
 
