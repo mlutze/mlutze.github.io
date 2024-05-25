@@ -29,6 +29,8 @@
         // reset result table for new speed
     // TODO make update function update all config info
     var secretText = "";
+    // list scores
+    var allScores = [];
     var scores = [];
 
     let cw = new jscw()
@@ -76,6 +78,7 @@
         addNToCounter(counter, key, 1)
     }
 
+    // TODO take a table body and result map as argument
     function displayResult() {
         let totalCorrect = 0;
         let totalAttempted = 0;
@@ -148,6 +151,68 @@
         document.getElementById("useRecommendedAlphabet").disabled = false;
     }
 
+    // returns a map from letter to score information
+    // "a" -> { "correct": 123, "total": 456 }
+    // TODO don't rely on alphabet
+    function getResult() {
+        let submission = document.getElementById("submission");
+        let base = secretText;
+        let changed = submission.value;
+
+        let diffs = (new diff_match_patch).diff_main(base, changed);
+
+
+        let alphabet = document.getElementById("alphabet").value;
+        let correct = new Map();
+        let incorrect = new Map();
+        for (let i = 0; i < alphabet.length; i++) {
+            correct.set(alphabet.charAt(i), 0);
+            incorrect.set(alphabet.charAt(i), 0);
+        }
+        
+        for (let diff of diffs) {
+            let isCorrect = (diff[0] === 0);
+            let letters = diff[1];
+            for (let i = 0; i < letters.length; i++) {
+                let letter = letters.charAt(i);
+                if (letter !== " ") {
+                    if (isCorrect) {
+                        addToCounter(correct, letter);
+                    } else {
+                        addToCounter(incorrect, letter);
+                    }
+                }
+            }
+        }
+
+        let result = new Map();
+        for (let i = 0; i < alphabet.length; i++) {
+            let letter = alpbabet.charAt(i);
+            let info = {
+                "correct": correct.get(letter),
+                "total": correct.get(letter) + incorrect.get(letter)
+            };
+            result.set(letter, info)
+        }
+
+        return result;
+    }
+
+    // result table:
+    // - letter
+    // - correct
+    // - total
+    // - percent
+    // - confidence
+    // builds a table total + (array of records) from a result
+    // alphabet should be unique
+    // TODO change alphabet input method away from hacky method
+    function buildResultTable(result, alphabet) {
+
+    }
+
+    // TODO add mergeResult function
+    // TODO replace with displayresult
     function addToResult() {
         // TODO separate score tracking and displaying
         let submission = document.getElementById("submission");
