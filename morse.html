@@ -202,13 +202,61 @@
     // - letter
     // - correct
     // - total
-    // - percent
+    // - portion
     // - confidence
     // builds a table total + (array of records) from a result
     // alphabet should be unique
     // TODO change alphabet input method away from hacky method
     function buildResultTable(result, alphabet) {
+        let totalTotal = 0;
+        let totalCorrect = 0;
+        let records = [];
+        for (let [letter, rec] of result) {
+            totalTotal += rec.total;
+            totalCorrect += rec.correct;
+            records.push({
+                "letter": letter,
+                "correct" : rec.correct,
+                "total": rec.total,
+                "portion": rec.correct / rec.total,
+                "confidence": calcConfidence(rec.correct, rec.total)
+            })
+        }
+        // TODO sort
+        return {
+            "correct" : totalCorrect,
+            "total": totalTotal,
+            "portion": totalCorrect / totalTotal,
+            "confidence": calcConfidence(totalCorrect, totalTotal)
+        };
+    }
 
+    function renderResultTable(table) {
+        let tab = document.createElement("table");
+        // add header
+        // add rows
+    }
+
+    function renderResultRow(record) {
+        let tr = document.createElement("tr");
+
+        let letterTd = document.createElement("td");
+        let correctTd = document.createElement("td");
+        let totalTd = document.createElement("td");
+        let percentTd = document.createElement("td");
+        let confidenceTd = document.createElement("td");
+
+        letterTd.innerText = record.letter;
+        correctTd.innerText = record.correct;
+        totalTd.innerText = record.total;
+        percentTd.innerText = Math.round(record.portion * 100) + "%";
+        confidenceTd.innerText = Math.round(record.confidence * 100) + "%";
+
+        tr.appendChild(letterTd);
+        tr.appendChild(correctTd);
+        tr.appendChild(totalTd);
+        tr.appendChild(percentTd);
+        tr.appendChild(confidenceTd);
     }
 
     // TODO add mergeResult function
