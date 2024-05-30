@@ -222,7 +222,7 @@
                 "confidence": calcConfidence(rec.correct, rec.total)
             })
         }
-        // TODO sort
+        records.sort((r1, r2) => r1.confidence - r2.confidence)
         return {
             "correct" : totalCorrect,
             "total": totalTotal,
@@ -232,9 +232,52 @@
     }
 
     function renderResultTable(table) {
+
+        ///////////////////////////
+        // Create the table head //
+        ///////////////////////////
+
+        let thead = document.createElement("thead");
+        let tr = document.createElement("tr");
+
+        let letterTh = document.createElement("th");
+        let correctTh = document.createElement("th");
+        let totalTh = document.createElement("th");
+        let percentTh = document.createElement("th");
+        let confidenceTh = document.createElement("th");
+
+        letterTh.innerText = "Letter";
+        correctTh.innerText = "Correct";
+        totalTh.innerText = "Total";
+        percentTh.innerText = "Percent";
+        confidenceTh.innerText = "Confidence";
+
+        tr.appendChild(letterTd);
+        tr.appendChild(correctTd);
+        tr.appendChild(totalTd);
+        tr.appendChild(percentTd);
+        tr.appendChild(confidenceTd);
+
+        thead.appendChild(tr);
+
+        ///////////////////////////
+        // Create the table body //
+        ///////////////////////////
+
+        let tbody = document.createElement("tbody");
+        for (let record of tab.records) {
+            let row = renderResultRow(record);
+            tbody.appendChild(row);
+        }
+
+        ////////////////////////
+        // Assemble the table //
+        ////////////////////////
+
         let tab = document.createElement("table");
-        // add header
-        // add rows
+        tab.appendChild(thead);
+        tab.appendChild(tbody);
+        return tab;
     }
 
     function renderResultRow(record) {
@@ -257,6 +300,8 @@
         tr.appendChild(totalTd);
         tr.appendChild(percentTd);
         tr.appendChild(confidenceTd);
+
+        return tr;
     }
 
     // TODO add mergeResult function
