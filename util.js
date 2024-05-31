@@ -5,11 +5,19 @@ class Counter {
 
     get(key) {
         if (this.#map.has(key)) {
-            this.#map.get(key)
+            return this.#map.get(key);
         } else {
-            0
+            return 0;
         }
     }
 
-     // TODO add
+    add(key) {
+        let current;
+        if (this.#map.has(key)) {
+            current = this.#map.get(key);
+        } else {
+            current = 0;
+        }
+        this.#map.set(key, current + 1);
+    }
 }
