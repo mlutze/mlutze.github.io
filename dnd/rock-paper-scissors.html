@@ -159,8 +159,18 @@
                 rates.set(shape, rate);
             }
             let choice = randomChoice(argMaxes(rates));
-            console.log(choice);
             return choice;
+        }],
+        ["neverRepeat", "Xavier", (history, player) => {
+            if (history.length === 0) {
+                return randomShape();
+            } else {
+                // pick from among the things I did not do last time
+                let lastRound = history[history.length - 1];
+                let lastPlayed = lastRound[player];
+                let options = allShapes.filter((shape) => shape !== lastPlayed);
+                return randomChoice(options);
+            }
         }]
     ];
     
