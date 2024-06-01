@@ -1,5 +1,3 @@
-// TODO add tests
-
 class Counter {
     #map = new Map();
 
