@@ -12,12 +12,21 @@ class Counter {
     }
 
     add(key) {
+        this.addN(key, 1)
+    }
+
+    addN(key, n) {
         let current;
         if (this.#map.has(key)) {
             current = this.#map.get(key);
         } else {
             current = 0;
         }
-        this.#map.set(key, current + 1);
+        this.#map.set(key, current + n);
+    }
+
+    // @deprecated
+    getMap() {
+        return this.#map
     }
 }

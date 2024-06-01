@@ -16,11 +16,17 @@ function runTests() {
         assert(c.get("b") === 0);
     })
 
-    test("adding three sets to 3", () => {
+    test("adding three times sets to 3", () => {
         let c = new Counter();
         c.add("a");
         c.add("a");
         c.add("a");
+        assert(c.get("a") === 3);
+    })
+
+    test("adding 3 sets to 3", () => {
+        let c = new Counter();
+        c.addN("a", 3);
         assert(c.get("a") === 3);
     })
 }
