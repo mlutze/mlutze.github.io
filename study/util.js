@@ -28,3 +28,32 @@ class Counter {
         return this.#map
     }
 }
+
+class Stats {
+
+    // Returns a 95% confidence interval for the true success rate.
+    // Uses the Agresti-Coull method
+    static getBounds(successes, total) {
+        let n_s = successes;
+        let n = total;
+        let z_a = 1.96;
+        let n_bar = n + z_a * z_a;
+        let p_bar = (1 / n_bar) * (n_s + (z_a * z_a) / 2)
+        let range = z_a * Math.sqrt((p_bar * (1 - p_bar)) / n_bar);
+        return {
+            lower: p_bar - range,
+            upper: p_bar + range
+        };
+    }
+
+    // Returns the "confidence level" for the given success rate.
+    static confidence(successes, total) {
+        let lowerBound = null;
+        if (total === 0) {
+            lowerBound = 0;
+        } else {
+            lowerBound = Math.max(this.getBounds(successes, total), 0);
+        }
+        return lowerBound;
+    }
+}

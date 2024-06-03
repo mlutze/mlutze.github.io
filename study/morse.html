@@ -25,7 +25,8 @@
     // TODO log results separately
     // TODO recommend promotion:
         // if confidence >90% then promote
-            // try for each of last N rounds
+            // if upper confidence < 90% then demote
+                // try for each of last N rounds
         // increase wpm, increase character speed if wpm would be greater
         // reset result table for new speed
     // TODO make update function update all config info
@@ -56,16 +57,6 @@
         return p_bar - z_a * Math.sqrt((p_bar * (1 - p_bar)) / n_bar);
     }
 
-    function calcConfidence(successes, total) {
-        let lowerBound = null;
-        if (total === 0) {
-            lowerBound = 0;
-        } else {
-            lowerBound = Math.max(lowerBoundRate(successes, total), 0);
-        }
-        return lowerBound;
-    }
-
     // TODO take a table body and result map as argument
     function displayResult() {
         let totalCorrect = 0;
@@ -88,7 +79,7 @@
         correctTd.innerText = totalCorrect;
         sumTd.innerText = totalAttempted;
         percentTd.innerText = Math.round(totalCorrect * 100 / totalAttempted) + "%";
-        confidenceTd.innerText = Math.round(calcConfidence(totalCorrect, totalAttempted) * 100) + "%";
+        confidenceTd.innerText = Math.round(Stats.confidence(totalCorrect, totalAttempted) * 100) + "%";
         totalRow.appendChild(totalLabel);
         totalRow.appendChild(correctTd);
         totalRow.appendChild(sumTd);
@@ -207,7 +198,7 @@
                 "correct" : rec.correct,
                 "total": rec.total,
                 "portion": rec.correct / rec.total,
-                "confidence": calcConfidence(rec.correct, rec.total)
+                "confidence": Stats.confidence(rec.correct, rec.total)
             })
         }
         records.sort((r1, r2) => r1.confidence - r2.confidence)
@@ -215,7 +206,7 @@
             "correct" : totalCorrect,
             "total": totalTotal,
             "portion": totalCorrect / totalTotal,
-            "confidence": calcConfidence(totalCorrect, totalTotal)
+            "confidence": Stats.confidence(totalCorrect, totalTotal)
         };
     }
 
@@ -339,7 +330,7 @@
             let numIncorrect = incorrect.get(letter);
             let sum = numCorrect + numIncorrect;
             let percent = numCorrect / sum;
-            let confidence = calcConfidence(numCorrect, sum);
+            let confidence = Stats.confidence(numCorrect, sum);
             let score = {
                 letter: letter,
                 correct: numCorrect,
