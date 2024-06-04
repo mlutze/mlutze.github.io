@@ -47,22 +47,11 @@
         document.getElementById("stop").disabled = true;
     }
 
-    function lowerBoundRate(successes, total) {
-        // Agresti-Coull method
-        let n_s = successes;
-        let n = total;
-        let z_a = 1.96;
-        let n_bar = n + z_a * z_a;
-        let p_bar = (1 / n_bar) * (n_s + (z_a * z_a) / 2)
-        return p_bar - z_a * Math.sqrt((p_bar * (1 - p_bar)) / n_bar);
-    }
-
     // TODO take a table body and result map as argument
     function displayResult() {
         let totalCorrect = 0;
         let totalAttempted = 0;
         for (let score of scores) {
-            console.log(score.num)
             totalCorrect += score.correct;
             totalAttempted += score.total;
         }

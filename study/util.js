@@ -52,7 +52,7 @@ class Stats {
         if (total === 0) {
             lowerBound = 0;
         } else {
-            lowerBound = Math.max(this.getBounds(successes, total), 0);
+            lowerBound = Math.max(this.getBounds(successes, total).lower, 0);
         }
         return lowerBound;
     }
