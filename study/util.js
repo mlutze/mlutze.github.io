@@ -57,3 +57,39 @@ class Stats {
         return lowerBound;
     }
 }
+
+class MapOps {
+    static getOrElse(map, key, orElse) {
+        let res = map.get(key);
+        if (res === undefined) {
+            res = orElse;
+        }
+        return res;
+    }
+
+    static merge(map1, map2, combine) {
+        let res = new Map();
+        let keys = new Set();
+        map1.forEach((k, v) => {
+            keys.add(k)
+        });
+
+        map2.forEach((k, v) => {
+            keys.add(k)
+        });
+
+        for (let key of keys) {
+            let val1 = map1.get(key);
+            let val2 = map2.get(key);
+            if (val1 === undefined) {
+                res.put(val2);
+            } else if (val2 === undefined) {
+                res.put(val1)
+            } else {
+                res.put(combine(val1, val2))
+            }
+        }
+
+        return res;
+    }
+}

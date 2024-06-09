@@ -29,4 +29,16 @@ function runTests() {
         c.addN("a", 3);
         assert(c.get("a") === 3);
     })
+
+    test("getOrElse present", () => {
+        let m = new Map();
+        m.set("a", 123);
+        assert(MapOps.getOrElse(m, "a", 456) === 123);
+    })
+
+    test("getOrElse absert", () => {
+        let m = new Map();
+        m.set("a", 123);
+        assert(MapOps.getOrElse(m, "b", 456) === 456);
+    })
 }
