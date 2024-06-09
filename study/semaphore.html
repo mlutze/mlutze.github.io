@@ -1,6 +1,28 @@
 <!DOCTYPE html>
 <html>
 <head>
+<template id="semaphore-romeo">
+<svg xmlns="http://www.w3.org/2000/svg" width="600" height="500" version="1.0">
+<circle cx="300" cy="210" r="25"/>
+<rect x="265" y="240" height="160" width="70" rx="20" ry="20"/>
+<g id="armL">
+<rect x="340" y="240" width="70" height="20" rx="10" ry="10"/>
+<path d="M399,244.5h200.5v101h-91v-90h-110z"/>
+<path d="M509.5,255.5h89v89h-89z" fill="#ff0"/>
+<path d="M509.5,255.5l89,89v-89z" fill="#f00"/>
+</g>
+<g 
+    transform="rotate(90 250 250)"
+    id="armR">
+<rect x="190" y="240" width="70" height="20" rx="10" ry="10"/>
+<path d="M0,244.5h200.5v11h-110v90h-91z"/>
+<path d="M.5,255.5h89v89h-89z" fill="#ff0"/>
+<path d="M.5,255.5h89l-89,89z" fill="#f00"/>
+</g>
+<circle cx="250" cy="250" r="5" fill = "pink"/>
+<circle cx="350" cy="250" r="5" fill = "pink"/>
+</svg>
+</template>
 <script>
 let positions = new Map();
 positions.set("a", [135, 180]);
@@ -32,8 +54,18 @@ positions.set("z", [-135, 90]);
 positions.set(" ", [180, 180]);
 positions.set("#", [0, 45]);
 positions.set("<", [45, 135]);
-// TODO try steal svgs from wikipedia
-// 
+
+// returns an svg node corresponding to the given character
+function draw(char) {
+    let template = document.getElementById("semaphore-romeo");
+    let node = template.content.cloneNode(true);
+    let rightRot = positions.get(char)[0];
+    let leftRot = positions.get(char)[1];
+    node.getElementById("armL").setAttribute("transform", "rotate(" + (leftRot + 270) + " 350 250)");
+    node.getElementById("armR").setAttribute("transform", "rotate(" + (90 - rightRot) + " 250 250)");
+    return node;
+}
+
 function animate(string, speed, canvas) {
     // create an svg
     // start with semaphore: romeo
@@ -51,24 +83,8 @@ function drawFrame(left, right, canvas) {
     // TODO displays figure with arms turned to the given angle
 }
 
-function drawBody(canvas) {
-    // head in center
-    let center = canvas.height / 2;
-    let radius = canvas.height / 20;
-    let context = canvas.getContext("2d");
-    context.beginPath();
-    context.arc(center, center, radius, 0, 2 * Math.PI);
-    context.fill();
-
-    let bodyWidth = radius * 4;
-    let bodyHeight = bodyWidth * 2;
-
-    context.fillRect(canvas.height / 2 - (radius * 2), canvas.height / 2 + 30, bodyWidth, bodyHeight)
-    // body below
-}
-
 onload = () => {
-    drawBody(document.getElementById("canvas"));
+    document.getElementById("canvas").replaceWith(draw("<"));
 }
 // canvas for display
 // alphabet
@@ -79,6 +95,6 @@ onload = () => {
 </script>
 </head>
 <body>
-    <canvas id="canvas" width="500" height="500"></canvas>
+    <svg id="canvas"></svg>
 </body>
 </html>
