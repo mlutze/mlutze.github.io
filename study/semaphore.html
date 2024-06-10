@@ -24,6 +24,12 @@
 </svg>
 </template>
 <script>
+const svgNamespace = "http://www.w3.org/2000/svg";
+const leftX = 350;
+const leftY = 250;
+const rightX = 250;
+const rightY = 250;
+
 let positions = new Map();
 positions.set("a", [135, 180]);
 positions.set("b", [90, 180]);
@@ -55,14 +61,29 @@ positions.set(" ", [180, 180]);
 positions.set("#", [0, 45]);
 positions.set("<", [45, 135]);
 
+function getLeftDir(char) {
+    return 270 + positions.get(char)[0];
+}
+
+function getLeftRot(char) {
+    return `${getLeftDir(char)} ${leftX} ${leftY}`;
+}
+
+function getRightDir(char) {
+    return 90 - positions.get(char)[1];
+}
+
+function getRightRot(char) {
+    return `${getRightDir(char)} ${rightX} ${rightY}`;
+}
+
 // returns an svg node corresponding to the given character
 function draw(char) {
     let template = document.getElementById("semaphore-romeo");
     let node = template.content.cloneNode(true);
-    let rightRot = positions.get(char)[0];
-    let leftRot = positions.get(char)[1];
-    node.getElementById("armL").setAttribute("transform", "rotate(" + (leftRot + 270) + " 350 250)");
-    node.getElementById("armR").setAttribute("transform", "rotate(" + (90 - rightRot) + " 250 250)");
+    node.getElementById("armL").setAttribute("transform", "rotate(" + getLeftRot(char) + ")");
+    node.getElementById("armR").setAttribute("transform", "rotate(" + getRightRot(char) + ")");
+    node.getElementById("armL").appendChild(makeAnimationSteps(char, "#", "5s").left);
     return node;
 }
 
@@ -79,12 +100,35 @@ function animate(string, speed, canvas) {
     // TODO displays the string as semaphore on the given canvas
 }
 
+// returns a { "left": node, "right": node } pair
+function makeAnimationSteps(from, to, dur) {
+    let animLeft = document.createElementNS(svgNamespace, "animateTransform");
+    animLeft.setAttribute("attributeName", "transform");
+    animLeft.setAttribute("type", "rotate");
+    animLeft.setAttribute("from", getLeftRot(from));
+    animLeft.setAttribute("to", getLeftRot(to));
+    animLeft.setAttribute("dur", dur);
+    animLeft.setAttribute("repeatCount", "indefinite");
+
+    let animRight = document.createElementNS(svgNamespace, "animateTransform");
+    animRight.setAttribute("attributeName", "transform");
+    animRight.setAttribute("type", "rotate");
+    animRight.setAttribute("from", getRightRot(from));
+    animRight.setAttribute("to", getRightRot(to));
+    animRight.setAttribute("dur", dur);
+
+    return {
+        "left": animLeft,
+        "right": animRight
+    };
+}
+
 function drawFrame(left, right, canvas) {
     // TODO displays figure with arms turned to the given angle
 }
 
 onload = () => {
-    document.getElementById("canvas").replaceWith(draw("<"));
+    document.getElementById("canvas").replaceWith(draw("z"));
 }
 // canvas for display
 // alphabet
