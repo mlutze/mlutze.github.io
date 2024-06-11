@@ -78,12 +78,16 @@ function getRightRot(char) {
 }
 
 // returns an svg node corresponding to the given character
-function draw(char) {
+function draw(string) {
     let template = document.getElementById("semaphore-romeo");
     let node = template.content.cloneNode(true);
-    node.getElementById("armL").setAttribute("transform", "rotate(" + getLeftRot(char) + ")");
-    node.getElementById("armR").setAttribute("transform", "rotate(" + getRightRot(char) + ")");
-    node.getElementById("armL").appendChild(makeAnimationSteps(char, "#", "5s").left);
+    // node.getElementById("armL").setAttribute("transform", "rotate(" + getLeftRot(char) + ")");
+    // node.getElementById("armR").setAttribute("transform", "rotate(" + getRightRot(char) + ")");
+
+    for (let step of makeAnimationSteps(string, 1000)) {
+        node.getElementById("armL").appendChild(step.left);
+        node.getElementById("armR").appendChild(step.right);
+    }
     return node;
 }
 
@@ -101,21 +105,23 @@ function animate(string, speed, canvas) {
 }
 
 // returns a { "left": node, "right": node } pair
-function makeAnimationSteps(from, to, dur) {
+function makeAnimationStep(from, to, dur) {
     let animLeft = document.createElementNS(svgNamespace, "animateTransform");
     animLeft.setAttribute("attributeName", "transform");
     animLeft.setAttribute("type", "rotate");
     animLeft.setAttribute("from", getLeftRot(from));
     animLeft.setAttribute("to", getLeftRot(to));
-    animLeft.setAttribute("dur", dur);
-    animLeft.setAttribute("repeatCount", "indefinite");
+    animLeft.setAttribute("dur", dur + "ms");
+    animLeft.setAttribute("fill", "freeze");
+    // animLeft.setAttribute("repeatCount", "indefinite");
 
     let animRight = document.createElementNS(svgNamespace, "animateTransform");
     animRight.setAttribute("attributeName", "transform");
     animRight.setAttribute("type", "rotate");
     animRight.setAttribute("from", getRightRot(from));
     animRight.setAttribute("to", getRightRot(to));
-    animRight.setAttribute("dur", dur);
+    animRight.setAttribute("dur", dur + "ms");
+    animRight.setAttribute("fill", "freeze");
 
     return {
         "left": animLeft,
@@ -123,12 +129,32 @@ function makeAnimationSteps(from, to, dur) {
     };
 }
 
+// given a list of animation steps, adds timings to them so they start in sequence
+function sequenceSteps(steps, dur) {
+    for (let i = 0; i < steps.length; i++) {
+        let beginTime = dur * i;
+        steps[i].left.setAttribute("begin", beginTime + "ms");
+        steps[i].right.setAttribute("begin", beginTime + "ms");
+    }
+}
+
+// creates a list of animation steps in sequence
+function makeAnimationSteps(string, dur) {
+    let chars = " " + string + " ";
+    let steps = []
+    for (let i = 1; i < chars.length; i++) {
+        steps.push(makeAnimationStep(chars.charAt(i - 1), chars.charAt(i), dur));
+    }
+    sequenceSteps(steps, dur);
+    return steps;
+}
+
 function drawFrame(left, right, canvas) {
     // TODO displays figure with arms turned to the given angle
 }
 
 onload = () => {
-    document.getElementById("canvas").replaceWith(draw("z"));
+    document.getElementById("canvas").replaceWith(draw("hello"));
 }
 // canvas for display
 // alphabet
