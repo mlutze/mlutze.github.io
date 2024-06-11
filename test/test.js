@@ -41,4 +41,11 @@ function runTests() {
         m.set("a", 123);
         assert(MapOps.getOrElse(m, "b", 456) === 456);
     })
+
+    test("merge empty empty empty", () => {
+        let m1 = new Map();
+        let m2 = new Map();
+        let merged = MapOps.merge(m1, m2, (v1, v2) => "blah");
+        assert(merged.size === 0);
+    })
 }

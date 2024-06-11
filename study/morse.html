@@ -133,11 +133,11 @@
 
 
         let alphabet = document.getElementById("alphabet").value;
-        let correct = new Map();
-        let incorrect = new Map();
+        let correct = new Counter();
+        let incorrect = new Counter();
         for (let i = 0; i < alphabet.length; i++) {
-            correct.set(alphabet.charAt(i), 0);
-            incorrect.set(alphabet.charAt(i), 0);
+            correct.addN(alphabet.charAt(i), 0);
+            incorrect.addN(alphabet.charAt(i), 0);
         }
         
         for (let diff of diffs) {
@@ -157,7 +157,7 @@
 
         let result = new Map();
         for (let i = 0; i < alphabet.length; i++) {
-            let letter = alpbabet.charAt(i);
+            let letter = alphabet.charAt(i);
             let info = {
                 "correct": correct.get(letter),
                 "total": correct.get(letter) + incorrect.get(letter)
@@ -197,11 +197,13 @@
             "correct" : totalCorrect,
             "total": totalTotal,
             "portion": totalCorrect / totalTotal,
-            "confidence": Stats.confidence(totalCorrect, totalTotal)
+            "confidence": Stats.confidence(totalCorrect, totalTotal),
+            "records": records
         };
     }
 
     function renderResultTable(table) {
+        // TODO alignment, letter buttons
 
         ///////////////////////////
         // Create the table head //
@@ -222,11 +224,11 @@
         percentTh.innerText = "Percent";
         confidenceTh.innerText = "Confidence";
 
-        tr.appendChild(letterTd);
-        tr.appendChild(correctTd);
-        tr.appendChild(totalTd);
-        tr.appendChild(percentTd);
-        tr.appendChild(confidenceTd);
+        tr.appendChild(letterTh);
+        tr.appendChild(correctTh);
+        tr.appendChild(totalTh);
+        tr.appendChild(percentTh);
+        tr.appendChild(confidenceTh);
 
         thead.appendChild(tr);
 
@@ -235,7 +237,7 @@
         ///////////////////////////
 
         let tbody = document.createElement("tbody");
-        for (let record of tab.records) {
+        for (let record of table.records) {
             let row = renderResultRow(record);
             tbody.appendChild(row);
         }
@@ -245,6 +247,7 @@
         ////////////////////////
 
         let tab = document.createElement("table");
+        tab.setAttribute("id", "resultTable");
         tab.appendChild(thead);
         tab.appendChild(tbody);
         return tab;
@@ -275,80 +278,31 @@
     }
 
     function mergeResults(res1, res2) {
-        // TODO finish this
-        let res = new Map();
-        let allKeys = new Set();
-        for (key of res1.keys()) {
-            add 
+        function mergeResult(val1, val2) {
+            return {
+                "correct": val1.correct + val2.correct,
+                "total": val1.total + val2.total
+            };
         }
-        for (key of res1.keys()) {
-            if (res2.has(key)) {
-                let total = res1.get(key) + res2.get(key);
-                let correct = res1.get()
-                res.set(key)
-            }
-        }
+        return MapOps.merge(res1, res2, mergeResult);
+    }
+
+    function mergeAllResults(ress) {
+        return ress.reduce(mergeResults);
     }
 
     // TODO add mergeResult function
     // TODO replace with displayresult
     function addToResult() {
-        // TODO separate score tracking and displaying
-        let submission = document.getElementById("submission");
-        let base = secretText;
-        let changed = submission.value;
+        let result = getResult();
+        allScores.push(result);
 
-        let diffs = (new diff_match_patch).diff_main(base, changed);
+        let alphabet = document.getElementById("alphabet").value; // HACK LINE
 
-
-        let alphabet = document.getElementById("alphabet").value;
-        let correct = new Counter();
-        let incorrect = new Counter();
-        for (let i = 0; i < alphabet.length; i++) {
-            correct.addN(alphabet.charAt(i), 0);
-            incorrect.addN(alphabet.charAt(i), 0);
-        }
-        
-        for (let diff of diffs) {
-            let isCorrect = (diff[0] === 0);
-            let letters = diff[1];
-            for (let i = 0; i < letters.length; i++) {
-                let letter = letters.charAt(i);
-                if (letter !== " ") {
-                    if (isCorrect) {
-                        correct.add(letter);
-                    } else {
-                        incorrect.add(letter);
-                    }
-                }
-            }
-        }
-
-        // add the scores from last time
-        for (let score of scores) {
-            correct.addN(score.letter, score.correct);
-            incorrect.addN(score.letter, score.total - score.correct);
-        }
-
-        scores = [];
-        for (kv of correct.getMap()) {
-            let letter = kv[0];
-            let numCorrect = kv[1];
-            let numIncorrect = incorrect.get(letter);
-            let sum = numCorrect + numIncorrect;
-            let percent = numCorrect / sum;
-            let confidence = Stats.confidence(numCorrect, sum);
-            let score = {
-                letter: letter,
-                correct: numCorrect,
-                total: sum,
-                rate: percent,
-                confidence: confidence,
-            };
-            scores.push(score);
-        }
-
-        displayResult()
+        let totalResult = mergeAllResults(allScores);
+        let table = buildResultTable(totalResult, alphabet);
+        let renderedTable = renderResultTable(table);
+        document.getElementById("resultTable").replaceWith(renderedTable);
     }
 
     function resetResult() {
@@ -564,7 +518,7 @@
         </tr>
     </tfoot>
 </table>
-<table>
+<table id="resultTable">
     <thead>
         <tr>
             <th colspan="5">Result</th>
