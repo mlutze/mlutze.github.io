@@ -37,3 +37,7 @@ function test(name, pred) {
         reportTest(name, "Failure", error.message)
     }
 }
+
+function debug(string) {
+    document.getElementById("debug").value += string + "\n";
+}

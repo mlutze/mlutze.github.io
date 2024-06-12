@@ -81,23 +81,24 @@ class MapOps {
     static merge(map1, map2, combine) {
         let res = new Map();
         let keys = new Set();
-        map1.forEach((k, v) => {
-            keys.add(k)
-        });
+        for (let [key, value] of map1.entries()) {
+            keys.add(key);
+        };
 
-        map2.forEach((k, v) => {
-            keys.add(k)
-        });
+        for (let [key, value] of map2.entries()) {
+            keys.add(key);
+        };
 
         for (let key of keys) {
+            console.log("key: " + key)
             let val1 = map1.get(key);
             let val2 = map2.get(key);
             if (val1 === undefined) {
-                res.put(val2);
+                res.set(key, val2);
             } else if (val2 === undefined) {
-                res.put(val1)
+                res.set(key, val1)
             } else {
-                res.put(combine(val1, val2))
+                res.set(key, combine(val1, val2))
             }
         }
 
