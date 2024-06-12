@@ -46,8 +46,8 @@ class Stats {
         };
     }
 
-    // Returns the "confidence level" for the given success rate.
-    static confidence(successes, total) {
+    // Returns the lower bound for the given success rate.
+    static lowerBound(successes, total) {
         let lowerBound = null;
         if (total === 0) {
             lowerBound = 0;
@@ -55,6 +55,17 @@ class Stats {
             lowerBound = Math.max(this.getBounds(successes, total).lower, 0);
         }
         return lowerBound;
+    }
+
+    // Returns the upper bound for the given success rate.
+    static upperBound(successes, total) {
+        let upperBound = null;
+        if (total === 0) {
+            upperBound = 1;
+        } else {
+            upperBound = Math.min(this.getBounds(successes, total).upper, 1);
+        }
+        return upperBound;
     }
 }
 

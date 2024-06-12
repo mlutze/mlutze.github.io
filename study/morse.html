@@ -49,7 +49,7 @@
         document.getElementById("stop").disabled = true;
     }
 
-    // TODO take a table body and result map as argument
+    // TODO remove this function
     function displayResult() {
         let totalCorrect = 0;
         let totalAttempted = 0;
@@ -189,7 +189,8 @@
                 "correct" : rec.correct,
                 "total": rec.total,
                 "portion": rec.correct / rec.total,
-                "confidence": Stats.confidence(rec.correct, rec.total)
+                "lowerBound": Stats.lowerBound(rec.correct, rec.total),
+                "upperBound": Stats.upperBound(rec.correct, rec.total)
             })
         }
         records.sort((r1, r2) => r1.confidence - r2.confidence)
@@ -197,7 +198,8 @@
             "correct" : totalCorrect,
             "total": totalTotal,
             "portion": totalCorrect / totalTotal,
-            "confidence": Stats.confidence(totalCorrect, totalTotal),
+            "lowerBound": Stats.lowerBound(totalCorrect, totalTotal),
+            "upperBound": Stats.upperBound(totalCorrect, totalTotal),
             "records": records
         };
     }
@@ -216,27 +218,55 @@
         let correctTh = document.createElement("th");
         let totalTh = document.createElement("th");
         let percentTh = document.createElement("th");
-        let confidenceTh = document.createElement("th");
+        let lowerBoundTh = document.createElement("th");
+        let upperBoundTh = document.createElement("th");
 
         letterTh.innerText = "Letter";
         correctTh.innerText = "Correct";
         totalTh.innerText = "Total";
         percentTh.innerText = "Percent";
-        confidenceTh.innerText = "Confidence";
+        lowerBoundTh.innerText = "Lower Bound";
+        upperBoundTh.innerText = "Upper Bound";
 
         tr.appendChild(letterTh);
         tr.appendChild(correctTh);
         tr.appendChild(totalTh);
         tr.appendChild(percentTh);
-        tr.appendChild(confidenceTh);
+        tr.appendChild(lowerBoundTh);
+        tr.appendChild(upperBoundTh);
 
         thead.appendChild(tr);
+
+        //////////////////////////
+        // Create the total row //
+        //////////////////////////
+
+        let totalRow = document.createElement("tr");
+        let totalLabel = document.createElement("td");
+        let correctTd = document.createElement("td");
+        let sumTd = document.createElement("td");
+        let percentTd = document.createElement("td");
+        let lowerBoundTd = document.createElement("td");
+        let upperBoundTd = document.createElement("td");
+        totalLabel.innerText = "Total";
+        correctTd.innerText = table.correct;
+        sumTd.innerText = table.total;
+        percentTd.innerText = Math.round(table.portion * 100) + "%";
+        lowerBoundTd.innerText = Math.round(table.lowerBound * 100) + "%";
+        upperBoundTd.innerText = Math.round(table.upperBound * 100) + "%";
+        totalRow.appendChild(totalLabel);
+        totalRow.appendChild(correctTd);
+        totalRow.appendChild(sumTd);
+        totalRow.appendChild(percentTd);
+        totalRow.appendChild(lowerBoundTd);
+        totalRow.appendChild(upperBoundTd);
 
         ///////////////////////////
         // Create the table body //
         ///////////////////////////
 
         let tbody = document.createElement("tbody");
+        tbody.appendChild(totalRow);
         for (let record of table.records) {
             let row = renderResultRow(record);
             tbody.appendChild(row);
@@ -260,19 +290,22 @@
         let correctTd = document.createElement("td");
         let totalTd = document.createElement("td");
         let percentTd = document.createElement("td");
-        let confidenceTd = document.createElement("td");
+        let lowerBoundTd = document.createElement("td");
+        let upperBoundTd = document.createElement("td");
 
         letterTd.innerText = record.letter;
         correctTd.innerText = record.correct;
         totalTd.innerText = record.total;
         percentTd.innerText = Math.round(record.portion * 100) + "%";
-        confidenceTd.innerText = Math.round(record.confidence * 100) + "%";
+        lowerBoundTd.innerText = Math.round(record.lowerBound * 100) + "%";
+        upperBoundTd.innerText = Math.round(record.upperBound * 100) + "%";
 
         tr.appendChild(letterTd);
         tr.appendChild(correctTd);
         tr.appendChild(totalTd);
         tr.appendChild(percentTd);
-        tr.appendChild(confidenceTd);
+        tr.appendChild(lowerBoundTd);
+        tr.appendChild(upperBoundTd);
 
         return tr;
     }
@@ -521,14 +554,15 @@
 <table id="resultTable">
     <thead>
         <tr>
-            <th colspan="5">Result</th>
+            <th colspan="6">Result</th>
         </tr>
         <tr>
             <th>Letter</th>
             <th>Correct</th>
             <th>Total</th>
             <th>Percent</th>
-            <th>Confidence</th>
+            <th>Lower Bound</th>
+            <th>Upper Bound</th>
         </tr>
     </thead>
     <tbody id="resultBody", style="text-align: right;"></tbody>
