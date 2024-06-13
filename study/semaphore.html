@@ -91,17 +91,83 @@ function draw(string) {
     return node;
 }
 
-function animate(string, speed, canvas) {
-    // create an svg
-    // start with semaphore: romeo
-    // for each letter:
-        // append animation from previous position
-        // need a from-to function to animate from one letter to the next
-        // ensure each animation starts after the previous
-        // arms move at once
-        // probably pause between movements (configurable duration)
-        
-    // TODO displays the string as semaphore on the given canvas
+/**
+ * @typedef {Object} Movement
+ * @property {number} from
+ * @property {number} to
+ */
+
+/**
+ * @typedef {Object} Transition
+ * @property {Movement} left
+ * @property {Movement} right
+  * @property {number} dur
+ */
+
+// TODO:
+// - steps -> commands
+// - transition is:
+//   - direct
+// - step is:
+//  - hold (time)
+//  - move (time)
+// 
+/**
+ * Creates the transition from the position representing one symbol to the next.
+ * The symbols should be distinct. 
+ * 
+ * @param {string} from
+ * @param {string} to
+ * @param {number} dur
+ * @returns {Transition}
+ */
+function makeTransition(from, to, dur) {
+    return {
+        "left": {
+            "from": getLeftRot(from),
+            "to": getLeftRot(to),
+        },
+        "right": {
+            "from": getRightRot(from),
+            "to": getRightRot(to),
+        },
+        "dur": dur
+    }
+}
+
+/**
+ * Creates all the transitions needed to step from one symbol to the next.
+ * The symbols may be identical, in which case appropriate transitions are added.
+ * 
+ * @param {string} from
+ * @param {string} to
+ * @param {number} dur
+ * @returns {array<Transition>}
+ */
+function makeStep(from, to, dur) {
+    // if equal, then transition to rest and back
+    if (from === to) {
+        return [
+            makeTransition(from, " ", dur / 2),
+            makeTransition(" ", to, dur / 2)
+        ];
+    } else {
+        return [makeTransition(from, to, dur)];
+    }
+}
+
+/**
+ * @param {Movement} m
+ * @returns {SVGAnimateTransformElement}
+ */
+function toNode(m) {
+    let node = document.createElementNS(svgNamespace, "animateTransform");
+    animLeft.setAttribute("attributeName", "transform");
+    animLeft.setAttribute("type", "rotate");
+    animLeft.setAttribute("from", getLeftRot(from));
+    animLeft.setAttribute("to", getLeftRot(to));
+    animLeft.setAttribute("dur", dur + "ms");
+    animLeft.setAttribute("fill", "freeze");
 }
 
 // returns a { "left": node, "right": node } pair
