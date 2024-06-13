@@ -336,9 +336,18 @@
         let table = buildResultTable(totalResult, alphabet);
         let renderedTable = renderResultTable(table);
         document.getElementById("resultTable").replaceWith(renderedTable);
+
+        document.getElementById("showSolution").disabled = false;
+        document.getElementById("addToResult").disabled = true;
+        document.getElementById("resetResult").disabled = false;
+        document.getElementById("importResult").disabled = true;
+        document.getElementById("exportResult").disabled = false;
+        document.getElementById("play").disabled = false;
+        document.getElementById("useRecommendedAlphabet").disabled = false;
     }
 
     function resetResult() {
+        // TODO broken
         scores = []
         document.getElementById("resultBody").replaceChildren();
 
@@ -351,15 +360,15 @@
         document.getElementById("useRecommendedAlphabet").disabled = true;
     }
 
-
-
     function useRecommendedAlphabet() {
+        let totalResult = mergeAllResults(allScores);
+        let table = buildResultTable(totalResult);
         let newAlphabet = "";
-        for (let score of scores) {
-            let count = 100 - score.confidence * 100;
-            newAlphabet += score.letter.repeat(count);
+        console.log(totalResult);
+        for (let record of table.records) {
+            let count = 100 - record.lowerBound * 100;
+            newAlphabet += record.letter.repeat(count);
         }
-        
         document.getElementById("alphabet").value = newAlphabet;
     }
 
