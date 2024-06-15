@@ -81,13 +81,17 @@ function getRightRot(char) {
 function draw(string) {
     let template = document.getElementById("semaphore-romeo");
     let node = template.content.cloneNode(true);
-    // node.getElementById("armL").setAttribute("transform", "rotate(" + getLeftRot(char) + ")");
-    // node.getElementById("armR").setAttribute("transform", "rotate(" + getRightRot(char) + ")");
 
-    for (let step of makeAnimationSteps(string, 1000)) {
-        node.getElementById("armL").appendChild(step.left);
-        node.getElementById("armR").appendChild(step.right);
+    let steps = makeSteps(string, 1000, 500);
+    let nodes = toNodes(steps);
+
+    for (let leftNode of nodes.left) {
+        node.getElementById("armL").appendChild(leftNode);
     }
+    for (let rightNode of nodes.right) {
+        node.getElementById("armR").appendChild(rightNode);
+    }
+
     return node;
 }
 
@@ -101,7 +105,14 @@ function draw(string) {
  * @typedef {Object} Transition
  * @property {Movement} left
  * @property {Movement} right
-  * @property {number} dur
+ * @property {number} dur
+ * @property {"Transition"} type
+ */
+
+/**
+ * @typedef {Object} Hold
+ * @property {number} dur
+ * @property {"Hold"} type
  */
 
 // TODO:
@@ -131,7 +142,19 @@ function makeTransition(from, to, dur) {
             "from": getRightRot(from),
             "to": getRightRot(to),
         },
-        "dur": dur
+        "dur": dur,
+        "type": "Transition"
+    }
+}
+
+/**
+ * @param {number} dur
+ * @returns {Hold}
+ */
+function makeHold(dur) {
+    return  {
+        "dur": dur,
+        "type": "Hold"
     }
 }
 
@@ -156,67 +179,56 @@ function makeStep(from, to, dur) {
     }
 }
 
-/**
- * @param {Movement} m
- * @returns {SVGAnimateTransformElement}
- */
-function toNode(m) {
-    let node = document.createElementNS(svgNamespace, "animateTransform");
-    animLeft.setAttribute("attributeName", "transform");
-    animLeft.setAttribute("type", "rotate");
-    animLeft.setAttribute("from", getLeftRot(from));
-    animLeft.setAttribute("to", getLeftRot(to));
-    animLeft.setAttribute("dur", dur + "ms");
-    animLeft.setAttribute("fill", "freeze");
-}
-
-// returns a { "left": node, "right": node } pair
-function makeAnimationStep(from, to, dur) {
-    let animLeft = document.createElementNS(svgNamespace, "animateTransform");
-    animLeft.setAttribute("attributeName", "transform");
-    animLeft.setAttribute("type", "rotate");
-    animLeft.setAttribute("from", getLeftRot(from));
-    animLeft.setAttribute("to", getLeftRot(to));
-    animLeft.setAttribute("dur", dur + "ms");
-    animLeft.setAttribute("fill", "freeze");
-    // animLeft.setAttribute("repeatCount", "indefinite");
-
-    let animRight = document.createElementNS(svgNamespace, "animateTransform");
-    animRight.setAttribute("attributeName", "transform");
-    animRight.setAttribute("type", "rotate");
-    animRight.setAttribute("from", getRightRot(from));
-    animRight.setAttribute("to", getRightRot(to));
-    animRight.setAttribute("dur", dur + "ms");
-    animRight.setAttribute("fill", "freeze");
-
-    return {
-        "left": animLeft,
-        "right": animRight
-    };
-}
-
-// given a list of animation steps, adds timings to them so they start in sequence
-function sequenceSteps(steps, dur) {
-    for (let i = 0; i < steps.length; i++) {
-        let beginTime = dur * i;
-        steps[i].left.setAttribute("begin", beginTime + "ms");
-        steps[i].right.setAttribute("begin", beginTime + "ms");
-    }
-}
-
-// creates a list of animation steps in sequence
-function makeAnimationSteps(string, dur) {
+function makeSteps(string, transDur, holdDur) {
     let chars = " " + string + " ";
     let steps = []
     for (let i = 1; i < chars.length; i++) {
-        steps.push(makeAnimationStep(chars.charAt(i - 1), chars.charAt(i), dur));
+        steps.push(...makeStep(chars.charAt(i - 1), chars.charAt(i), transDur))
+        steps.push(makeHold(holdDur));
     }
-    sequenceSteps(steps, dur);
     return steps;
 }
 
-function drawFrame(left, right, canvas) {
-    // TODO displays figure with arms turned to the given angle
+/**
+ * Returns a node corresponding to the given movement at the given start time
+ * @param {Movement} m
+ * @param {number} start
+ * @returns {SVGAnimateTransformElement}
+ */
+function toNode(m, dur, start) {
+    let node = document.createElementNS(svgNamespace, "animateTransform");
+    node.setAttribute("attributeName", "transform");
+    node.setAttribute("type", "rotate");
+    node.setAttribute("from", m.from);
+    node.setAttribute("to", m.to);
+    node.setAttribute("dur", dur + "ms");
+    node.setAttribute("begin", start + "ms");
+    node.setAttribute("fill", "freeze");
+    return node
+}
+
+/**
+ * @param {array<Transition | Hold>} transitions
+ */
+function toNodes(transitions) {
+    let time = 0;
+    let leftNodes = [];
+    let rightNodes = [];
+    for (let transition of transitions) {
+        if (transition.type === "Transition") {
+            leftNodes.push(toNode(transition.left, transition.dur, time));
+            rightNodes.push(toNode(transition.right, transition.dur, time));
+            time += transition.dur;
+        } else if (transition.type === "Hold") {
+            time += transition.dur;
+        } else {
+            throw Exception("unexpected type: " + transition.type);
+        }
+    }
+    return {
+        "left": leftNodes,
+        "right": rightNodes
+    };
 }
 
 onload = () => {
