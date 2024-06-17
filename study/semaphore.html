@@ -78,7 +78,7 @@ function getRightRot(char) {
 }
 
 // returns an svg node corresponding to the given character
-function draw(string) {
+function mkSvg(string) {
     let template = document.getElementById("semaphore-romeo");
     let node = template.content.cloneNode(true);
 
@@ -231,8 +231,17 @@ function toNodes(transitions) {
     };
 }
 
+function draw(string) {
+    document.getElementById("canvas").replaceChildren(mkSvg(string));
+}
+
+function drawInput() {
+    let input = document.getElementById("input").value;
+    draw(input);
+}
+
 onload = () => {
-    document.getElementById("canvas").replaceWith(draw("hello"));
+    draw("");
 }
 // canvas for display
 // alphabet
@@ -243,6 +252,9 @@ onload = () => {
 </script>
 </head>
 <body>
-    <svg id="canvas"></svg>
+    <div id="canvas"></div>
+    <br>
+    <input id="input"/>
+    <button onclick="drawInput()">Draw</button>
 </body>
 </html>
