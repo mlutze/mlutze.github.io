@@ -82,7 +82,7 @@
         // sort by reverse total first
         // because a 0 with lots of tries is worse than a 0 with few
         scores.sort((s1, s2) => s2.total - s1.total);
-        scores.sort((s1, s2) => s1.confidence - s2.confidence);
+        scores.sort((s1, s2) => s1.lowerBound - s2.lowerBound);
         for (let score of scores) {
             let row = document.createElement("tr");
             let labelTd = document.createElement("td");

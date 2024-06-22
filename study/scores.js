@@ -44,7 +44,7 @@ function buildResultTable(result) {
             "upperBound": Stats.upperBound(rec.correct, rec.total)
         })
     }
-    records.sort((r1, r2) => r1.confidence - r2.confidence)
+    records.sort((r1, r2) => r1.lowerBound - r2.lowerBound)
     return {
         "correct" : totalCorrect,
         "total": totalTotal,
