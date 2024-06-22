@@ -54,3 +54,57 @@ function buildResultTable(result) {
         "records": records
     };
 }
+
+/**
+ * 
+ * @param {string} expected 
+ * @param {string} actual 
+ * @param {string} alphabet 
+ * @returns {Map<string, Record>}
+ */
+function calculateResults(expected, actual, alphabet) {
+    let base = expected;
+    let changed = actual;
+
+    // use the diff algorithm to create a diff
+    let diffs = (new diff_match_patch).diff_main(base, changed);
+
+    // set the counters to 0 for the whole alphabet
+    // TODO should not have to do this
+    let correct = new Counter();
+    let incorrect = new Counter();
+    for (let i = 0; i < alphabet.length; i++) {
+        correct.addN(alphabet.charAt(i), 0);
+        incorrect.addN(alphabet.charAt(i), 0);
+    }
+   
+    // use the diff to calculate correct and incorrect letters
+    // we ignore space characters
+    for (let diff of diffs) {
+        let isCorrect = (diff[0] === 0);
+        let letters = diff[1];
+        for (let i = 0; i < letters.length; i++) {
+            let letter = letters.charAt(i);
+            if (letter !== " ") {
+                if (isCorrect) {
+                    correct.add(letter);
+                } else {
+                    incorrect.add(letter);
+                }
+            }
+        }
+    }
+
+    // build a result map from the the correct/incorrect count
+    let result = new Map();
+    for (let i = 0; i < alphabet.length; i++) {
+        let letter = alphabet.charAt(i);
+        let info = {
+            "correct": correct.get(letter),
+            "total": correct.get(letter) + incorrect.get(letter)
+        };
+        result.set(letter, info)
+    }
+
+    return result;
+}

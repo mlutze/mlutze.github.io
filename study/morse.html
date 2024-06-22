@@ -129,44 +129,9 @@
         let submission = document.getElementById("submission");
         let base = secretText;
         let changed = submission.value;
-
-        let diffs = (new diff_match_patch).diff_main(base, changed);
-
-
         let alphabet = document.getElementById("alphabet").value;
-        let correct = new Counter();
-        let incorrect = new Counter();
-        for (let i = 0; i < alphabet.length; i++) {
-            correct.addN(alphabet.charAt(i), 0);
-            incorrect.addN(alphabet.charAt(i), 0);
-        }
-        
-        for (let diff of diffs) {
-            let isCorrect = (diff[0] === 0);
-            let letters = diff[1];
-            for (let i = 0; i < letters.length; i++) {
-                let letter = letters.charAt(i);
-                if (letter !== " ") {
-                    if (isCorrect) {
-                        correct.add(letter);
-                    } else {
-                        incorrect.add(letter);
-                    }
-                }
-            }
-        }
 
-        let result = new Map();
-        for (let i = 0; i < alphabet.length; i++) {
-            let letter = alphabet.charAt(i);
-            let info = {
-                "correct": correct.get(letter),
-                "total": correct.get(letter) + incorrect.get(letter)
-            };
-            result.set(letter, info)
-        }
-
-        return result;
+        return calculateResults(base, changed, alphabet);
     }
 
     function renderResultTable(table) {
