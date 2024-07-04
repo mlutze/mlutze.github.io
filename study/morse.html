@@ -57,76 +57,6 @@
         document.getElementById("stop").disabled = true;
     }
 
-    // TODO remove this function
-    function displayResult() {
-        let totalCorrect = 0;
-        let totalAttempted = 0;
-        for (let score of scores) {
-            totalCorrect += score.correct;
-            totalAttempted += score.total;
-        }
-
-        let resultBody = document.getElementById("resultBody");
-        resultBody.replaceChildren();
-        let totalRow = document.createElement("tr");
-        let totalLabel = document.createElement("td");
-        let correctTd = document.createElement("td");
-        let sumTd = document.createElement("td");
-        let percentTd = document.createElement("td");
-        let confidenceTd = document.createElement("td");
-        totalLabel.innerText = "Total";
-        correctTd.innerText = totalCorrect;
-        sumTd.innerText = totalAttempted;
-        percentTd.innerText = Math.round(totalCorrect * 100 / totalAttempted) + "%";
-        confidenceTd.innerText = Math.round(Stats.confidence(totalCorrect, totalAttempted) * 100) + "%";
-        totalRow.appendChild(totalLabel);
-        totalRow.appendChild(correctTd);
-        totalRow.appendChild(sumTd);
-        totalRow.appendChild(percentTd);
-        totalRow.appendChild(confidenceTd);
-        resultBody.appendChild(totalRow);
-
-        // sort by reverse total first
-        // because a 0 with lots of tries is worse than a 0 with few
-        scores.sort((s1, s2) => s2.total - s1.total);
-        scores.sort((s1, s2) => s1.lowerBound - s2.lowerBound);
-        for (let score of scores) {
-            let row = document.createElement("tr");
-            let labelTd = document.createElement("td");
-            let correctTd = document.createElement("td");
-            let totalTd = document.createElement("td");
-            let percentTd = document.createElement("td");
-            let confidenceTd = document.createElement("td");
-
-            let reminderButton = document.createElement("button");
-            reminderButton.innerText = score.letter;
-            reminderButton.onclick = () => {
-                cw.play(score.letter);
-            }
-
-            labelTd.appendChild(reminderButton);
-            correctTd.innerText = score.correct;
-            totalTd.innerText = score.total;
-            percentTd.innerText = Math.round(score.rate * 100) + "%";
-            confidenceTd.innerText = Math.round(score.confidence * 100) + "%";
-
-
-            row.appendChild(labelTd);
-            row.appendChild(correctTd);
-            row.appendChild(totalTd);
-            row.appendChild(percentTd);
-            row.appendChild(confidenceTd);
-
-            resultBody.appendChild(row);
-        }
-
-        document.getElementById("showSolution").disabled = false;
-        document.getElementById("addToResult").disabled = true;
-        document.getElementById("resetResult").disabled = false;
-        document.getElementById("play").disabled = false;
-        document.getElementById("useRecommendedAlphabet").disabled = false;
-    }
-
     // returns a map from letter to score information
     // "a" -> { "correct": 123, "total": 456 }
     // TODO don't rely on alphabet
@@ -139,7 +69,7 @@
         return calculateResults(base, changed, alphabet);
     }
 
-    function renderResultTable(table) {
+    function renderResultTable(table, title) {
         // TODO alignment, letter buttons
 
         ///////////////////////////
@@ -147,6 +77,17 @@
         ///////////////////////////
 
         let thead = document.createElement("thead");
+
+        // Title
+        let titleTr = document.createElement("tr");
+        let titleTh = document.createElement("th")
+        document.createElement("th");
+        titleTh.setAttribute("colspan", 6);
+        titleTh.innerText = title;
+        titleTr.appendChild(titleTh);
+        thead.appendChild(titleTr);
+
+        // Headers
         let tr = document.createElement("tr");
 
         let letterTh = document.createElement("th");
@@ -268,7 +209,7 @@
 
         let totalResult = mergeAllResults(allScores);
         let table = buildResultTable(totalResult, alphabet);
-        let renderedTable = renderResultTable(table);
+        let renderedTable = renderResultTable(table, "Result");
         document.getElementById("resultTable").replaceWith(renderedTable);
 
         document.getElementById("showSolution").disabled = false;
@@ -467,20 +408,6 @@
     </tfoot>
 </table>
 <table id="resultTable">
-    <thead>
-        <tr>
-            <th colspan="6">Result</th>
-        </tr>
-        <tr>
-            <th>Letter</th>
-            <th>Correct</th>
-            <th>Total</th>
-            <th>Percent</th>
-            <th>Lower Bound</th>
-            <th>Upper Bound</th>
-        </tr>
-    </thead>
-    <tbody id="resultBody", style="text-align: right;"></tbody>
 </table>
 </body>
 </html>
