@@ -23,6 +23,13 @@
 <script src="util.js"></script>
 <script src="scores.js"></script>
 <script>
+    // TODO show two result tables side-by-side:
+    // all results
+    // last results
+    // buttons above last results allow scrolling among all recorded results
+
+
+
     // TODO log results separately
     // TODO recommend promotion:
         // if confidence >90% then promote
@@ -116,8 +123,6 @@
         document.getElementById("showSolution").disabled = false;
         document.getElementById("addToResult").disabled = true;
         document.getElementById("resetResult").disabled = false;
-        document.getElementById("importResult").disabled = true;
-        document.getElementById("exportResult").disabled = false;
         document.getElementById("play").disabled = false;
         document.getElementById("useRecommendedAlphabet").disabled = false;
     }
@@ -269,8 +274,6 @@
         document.getElementById("showSolution").disabled = false;
         document.getElementById("addToResult").disabled = true;
         document.getElementById("resetResult").disabled = false;
-        document.getElementById("importResult").disabled = true;
-        document.getElementById("exportResult").disabled = false;
         document.getElementById("play").disabled = false;
         document.getElementById("useRecommendedAlphabet").disabled = false;
     }
@@ -283,8 +286,6 @@
         document.getElementById("showSolution").disabled = false;
         document.getElementById("addToResult").disabled = false;
         document.getElementById("resetResult").disabled = true;
-        document.getElementById("importResult").disabled = false;
-        document.getElementById("exportResult").disabled = true;
         document.getElementById("play").disabled = false;
         document.getElementById("useRecommendedAlphabet").disabled = true;
     }
@@ -345,24 +346,6 @@
 
         let eff = document.getElementById("wordSpeed").value;
         cw.setEff(eff);
-    }
-
-    function importResult() {
-        let result = prompt("Paste the result JSON string here.");
-        if (result !== null && result !== "") {
-            try {
-                let parsed = JSON.parse(result);
-                scores = parsed;
-                displayResult();
-            } catch (error) {
-                alert("Invalid JSON")
-            }
-        }
-    }
-
-    function exportResult() {
-        let json = JSON.stringify(scores);
-        alert(json);
     }
 
     function generate() {
@@ -475,12 +458,6 @@
                 </button>
                 <button id="resetResult" onclick="resetResult();" disabled="true">
                     Reset Result
-                </button>
-                <button id="importResult" onclick="importResult();">
-                    Import Result
-                </button>
-                <button id="exportResult" onclick="exportResult();" disabled="true">
-                    Export Result
                 </button>
                 <button id="useRecommendedAlphabet" onclick="useRecommendedAlphabet();" disabled="true">
                     Use Recommended Alphabet
