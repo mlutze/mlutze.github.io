@@ -105,3 +105,16 @@ class MapOps {
         return res;
     }
 }
+
+class Random {
+
+    // returns a random value from the given array
+    static choice(arr) {
+        return arr[Random.int(0, arr.length)];
+    }
+
+    // returns a random integer between min (inclusive) and max (exclusive)
+    static int(min, max) {
+        return Math.floor(Math.random() * (max - min)) + min;
+    }
+}

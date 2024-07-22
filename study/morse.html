@@ -200,7 +200,6 @@
         return ress.reduce(mergeResults);
     }
 
-    // TODO replace with displayresult
     function addToResult() {
         let result = getResult();
         allScores.push(result);
@@ -253,19 +252,11 @@
         document.getElementById("stop").disabled = true;
     }
 
-    function randomChoice(arr) {
-        return arr[randomInt(0, arr.length)];
-    }
-
-    function randomInt(min, max) {
-        return Math.floor(Math.random() * (max - min)) + min;
-    }
-
     function randomWord(alphabet, wordMin, wordMax) {
         let word = "";
-        let length = randomInt(wordMin, wordMax);
+        let length = Random.int(wordMin, wordMax);
         for (let i = 0; i < length; i++) {
-            word += randomChoice(alphabet);
+            word += Random.choice(alphabet);
         }
         return word;
     }
