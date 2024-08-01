@@ -70,7 +70,7 @@
     }
 
     function renderResultTable(table, title) {
-        // TODO alignment, letter buttons
+        // TODO alignment
 
         ///////////////////////////
         // Create the table head //
@@ -169,7 +169,11 @@
         let lowerBoundTd = document.createElement("td");
         let upperBoundTd = document.createElement("td");
 
-        letterTd.innerText = record.letter;
+        let letterButton = document.createElement("button");
+        letterButton.innerText = record.letter;
+        letterButton.onclick = () => cw.play(record.letter);
+        letterTd.appendChild(letterButton);
+
         correctTd.innerText = record.correct;
         totalTd.innerText = record.total;
         percentTd.innerText = Math.round(record.portion * 100) + "%";
