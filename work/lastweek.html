@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<head>
+    <script>
+        function onSelect() {
+            let usernameNode = document.getElementById("username");
+            let dropdownNode = document.getElementById("dropdown");
+            let selection = dropdownNode.options[dropdownNode.selectedIndex].value;
+            usernameNode.value = selection;
+        }
+
+        function minusWeek(d) {
+            let res = new Date();
+            res.setDate(d.getDate() - 7);
+            return res;
+        }
+
+        function formatDate(d) {
+            let yearString = d.getFullYear();
+            let monthString = ("" + d.getMonth()).padStart(2, "0");
+            let dayString = ("" + d.getDate()).padStart(2, "0");
+            return `${yearString}-${monthString}-${dayString}`;
+        }
+
+        function openPage() {
+            let usernameNode = document.getElementById("username");
+            let username = usernameNode.value;
+
+            let date = formatDate(minusWeek(new Date()));
+
+            let authorParam = username;
+            let createdParam = ">=" + date;
+
+            let queryString = "q=" + encodeURI(`created:${createdParam} author: ${authorParam}`);
+
+            let url = "https://github.com/flix/flix/issues?" + queryString;
+            window.open(url);
+        }
+    </script>
+</head>
+<body>
+<input id="username">
+<button id="go" onclick="openPage();">Go</button>
+<br/>
+<select id="dropdown" onchange="onSelect();">
+    <option></option>
+    <option>AStenbaek</option>
+    <option>JonathanStarup</option>
+    <option>LoZander</option>
+    <option>dghosef</option>
+    <option>jaschdoc</option>
+    <option>magnus-madsen</option>
+    <option>mlutze</option>
+    <option>sockmaster27</option>
+</select>
+</body>
