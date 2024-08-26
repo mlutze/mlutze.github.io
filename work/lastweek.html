@@ -30,7 +30,7 @@
             let authorParam = username;
             let createdParam = ">=" + date;
 
-            let queryString = "q=" + encodeURI(`created:${createdParam} author: ${authorParam}`);
+            let queryString = "q=" + encodeURI(`created:${createdParam} author:${authorParam}`);
 
             let url = "https://github.com/flix/flix/issues?" + queryString;
             window.open(url);
